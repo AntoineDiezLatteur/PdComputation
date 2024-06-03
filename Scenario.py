@@ -22,7 +22,7 @@ class Scenario:
         self.__wave_definition = None
         self.__frequency = None
         self.__celerity = 3e8
-        self.__wavelength = self.__celerity/self.__frequency
+        self.__wavelength = None
 
         self.__power = None
         self.__antenna_gain = None
@@ -32,7 +32,7 @@ class Scenario:
         self.__boltzmann_ct = 1.380649e-23
         self.__system_temperature = None
         self.__noise_bandwight = None
-        self.__noise = self.__boltzmann_ct * self.__system_temperature * self.__noise_bandwight
+        self.__noise = None
 
         self.__dwell_nb_burst = None
         self.__dwell_total_duration = None
@@ -315,3 +315,50 @@ class Scenario:
         print('Scenario loaded')
 
     # def generate_scenario(self):
+    def scenario_generator(self, file_name='scenario.json'):
+        default_scenario = {
+            "target_rcs": 1.0,
+            "target_range": 1000,
+            "swelring_model": 1,
+            "clutter_range": 2000,
+            "celerity": 300000000,  # Speed of light in m/s
+            "wave_definition": "frequency",
+            "frequency": 1e9,  # 1 GHz
+            "wavelength": None,  # This will be calculated if wave_definition is frequency
+            "power": 10,  # in watts
+            "antenna_gain": 20,  # in dBi
+            "loss": 1,  # Loss factor
+            "boltzmann_ct": 1.38e-23,  # Boltzmann constant
+            "noise_definition": "temperature",
+            "system_temperature": 290,  # in Kelvin
+            "noise_bandwight": 1e6,  # 1 MHz
+            "noise": None,  # This will be calculated if noise_definition is temperature
+            "dwell_nb_burst": 10,
+            "dwell_total_duration": 1,  # in seconds
+            "duty_cycle": 0.1,
+            "Nb": 1000,
+            "Kb": 100,
+            "pfa": 1e-6,
+            "desired_pd": 0.9
+        }
+
+        # Calculating derived values
+        if default_scenario['wave_definition'] == 'frequency':
+            default_scenario['wavelength'] = default_scenario['celerity'] / default_scenario['frequency']
+        elif default_scenario['wave_definition'] == 'wavelength':
+            default_scenario['frequency'] = default_scenario['celerity'] / default_scenario['wavelength']
+
+        if default_scenario['noise_definition'] == 'temperature':
+            default_scenario['noise'] = default_scenario['boltzmann_ct'] * default_scenario['system_temperature'] * default_scenario['noise_bandwight']
+
+        # Write the scenario to a JSON file
+        with open(file_name, 'w') as file:
+            json.dump(default_scenario, file, indent=4)
+
+
+if __name__ == '__main__':
+    scenario = Scenario()
+    print(type(scenario.target_rcs))
+    scenario.scenario_generator()
+    scenario.load_scenario('scenario.json')
+    print(scenario.target_rcs)
