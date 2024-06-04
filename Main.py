@@ -32,7 +32,8 @@ class Main():
     def main(self):
         scenario = Scenario()
         if self.args.edit:
-            pass
+            Ihm().run()
+
         elif self.args.run:
             scenario.load_scenario(self.args.scenario)
             Computation(scenario).run()

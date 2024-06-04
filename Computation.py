@@ -49,16 +49,17 @@ class Computation:
     #     self.target_S = P + G_antenna + G_lambda + G_target_rcs + G_pc - L - L_range - L_coef
     #     return self.target_S
 
-    def S_computation(self, rcs, range):
+    def S_computation(self, rcs, range, G_doppler):
         P = 10 * np.log10(self.scenario.power)
         G_antenna = self.scenario.antenna_gain
         L = self.scenario.loss
         G_lambda = 20 * np.log10(self.scenario.wavelength)
         G_clutter_rcs = 10 * np.log10(rcs)
         G_pc = 10 * np.log10(self.scenario.duty_cycle)
+        G_pc = 0
         L_range = 40 * np.log10(range)
-        L_coef = 30 * np.log10(4 * np.pi)
-        S = P + G_antenna + G_lambda + G_clutter_rcs + G_pc - L - L_range - L_coef
+        L_4pi3 = 30 * np.log10(4 * np.pi)
+        S = P + G_antenna + G_doppler + G_lambda + G_clutter_rcs + G_pc - L - L_range - L_4pi3
         return S
 
     def snrc_computation(self, s_clutter, s_target):
@@ -79,11 +80,13 @@ class Computation:
     def run(self):
         target_rcs = self.scenario.target_rcs
         target_range = self.scenario.target_range
-        s_target = self.S_computation(target_rcs, target_range)
+        target_doppler_gain = self.scenario.doppler_gain_target
+        s_target = self.S_computation(target_rcs, target_range, target_doppler_gain)
 
         clutter_rcs = self.scenario.clutter_rcs
         clutter_range = self.scenario.clutter_range
-        s_clutter = self.clutter_S_computation(clutter_rcs, clutter_range)
+        clutter_doppler_gain = self.scenario.doppler_gain_clutter
+        s_clutter = self.clutter_S_computation(clutter_rcs, clutter_range, clutter_doppler_gain)
 
         snrc = self.snrc_computation()
         pfa = self.scenario.pfa
@@ -104,7 +107,8 @@ if __name__ == '__main__':
 
     target_rcs = computation.scenario.target_rcs
     target_range = computation.scenario.target_range
-    s_target = computation.S_computation(target_rcs, target_range)
+    target_doppler_gain = computation.scenario.doppler_gain_target
+    s_target = computation.S_computation(target_rcs, target_range, target_doppler_gain)
     print(f'Target rcs: {target_rcs}')
     print(f'Target range: {target_range}')
     print(f'Target S: {s_target}')
@@ -112,13 +116,16 @@ if __name__ == '__main__':
 
     clutter_rcs = computation.scenario.clutter_rcs
     clutter_range = computation.scenario.clutter_range
-    s_clutter = computation.S_computation(clutter_rcs, clutter_range)
+    clutter_doppler_gain = computation.scenario.doppler_gain_clutter
+    s_clutter = computation.S_computation(clutter_rcs, clutter_range, clutter_doppler_gain)
     print(f'Clutter rcs: {clutter_rcs}')
     print(f'Clutter range: {clutter_range}')
     print(f'Clutter S: {s_clutter}')
 
     snrc = computation.snrc_computation(s_clutter, s_target)
     pfa = computation.scenario.pfa
+    noise = computation.scenario.noise
+    print(f'Noise: {10 * np.log10(noise)}')
     print(f'SNRC: {snrc}')
     print(f'PFA: {pfa}')
 

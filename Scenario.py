@@ -26,6 +26,8 @@ class Scenario:
 
         self.__power = None
         self.__antenna_gain = None
+        self.__doppler_gain_target = None
+        self.__doppler_gain_clutter = None
         self.__loss = None
 
         self.__noise_definition = None
@@ -261,6 +263,22 @@ class Scenario:
     def noise_definition(self, new_noise_definition):
         self.__noise_definition = new_noise_definition
 
+    @property
+    def doppler_gain_target(self):
+        return self.__doppler_gain_target
+
+    @doppler_gain_target.setter
+    def doppler_gain_target(self, new_doppler_gain_target):
+        self.__doppler_gain_target = new_doppler_gain_target
+
+    @property
+    def doppler_gain_clutter(self):
+        return self.__doppler_gain_clutter
+
+    @doppler_gain_clutter.setter
+    def doppler_gain_clutter(self, new_doppler_gain_clutter):
+        self.__doppler_gain_clutter = new_doppler_gain_clutter
+
     def main(self):
         pass
 
@@ -290,6 +308,8 @@ class Scenario:
 
         self.__power = scenario['power']
         self.__antenna_gain = scenario['antenna_gain']
+        self.__doppler_gain_target = scenario['doppler_gain_target']
+        self.__doppler_gain_clutter = scenario['doppler_gain_clutter']
         self.__loss = scenario['loss']
 
         self.__boltzmann_ct = scenario['boltzmann_ct']
@@ -318,27 +338,29 @@ class Scenario:
     # def generate_scenario(self):
     def scenario_generator(self, file_name='scenario.json'):
         default_scenario = {
-            "target_rcs": 50.0,
-            "target_range": 50000,
+            "target_rcs": 2.0,
+            "target_range": 10000,
             "swelring_model": 1,
-            "clutter_rcs": 100.0,
-            "clutter_range": 20000,
-            "celerity": 300000000,  # Speed of light in m/s
+            "clutter_rcs": 33.0,
+            "clutter_range": 10000,
+            "celerity": 3e8,  # Speed of light in m/s
             "wave_definition": "frequency",
-            "frequency": 1e9,  # 1 GHz
+            "frequency": 3.1e9,  # 1 GHz
             "wavelength": None,  # This will be calculated if wave_definition is frequency
-            "power": 1e6,  # in watts
-            "antenna_gain": 20,  # in dBi
-            "loss": 1,  # Loss factor
+            "power": 17920,  # in watts
+            "antenna_gain": 64,  # in dBi
+            "doppler_gain_target": 11.8,  # in dBi
+            "doppler_gain_clutter": -40,  # in dBi
+            "loss": 9.7,  # Loss factor
             "boltzmann_ct": 1.38e-23,  # Boltzmann constant
             "noise_definition": "temperature",
-            "system_temperature": 290,  # in Kelvin
-            "noise_bandwight": 1e6,  # 1 MHz
+            "system_temperature": 1064,  # in Kelvin
+            "noise_bandwight": 17575,  # 1 MHz
             "noise": None,  # This will be calculated if noise_definition is temperature
-            "dwell_nb_burst": 3,
+            "dwell_nb_burst": 4,
             "dwell_total_duration": 1,  # in seconds
             "duty_cycle": 0.1,
-            "Nb": 3,
+            "Nb": 4,
             "Kb": 2,
             "pfa": 1e-6,
             "desired_pd": 0.9
@@ -358,9 +380,9 @@ class Scenario:
             json.dump(default_scenario, file, indent=4)
 
 
-if __name__ == '__main__':
-    scenario = Scenario()
-    print(type(scenario.target_rcs))
-    scenario.scenario_generator()
-    scenario.load_scenario('scenario.json')
-    print(scenario.target_rcs)
+# if __name__ == '__main__':
+#     scenario = Scenario()
+#     print(type(scenario.target_rcs))
+#     scenario.scenario_generator()
+#     scenario.load_scenario('scenario.json')
+#     print(scenario.target_rcs)
