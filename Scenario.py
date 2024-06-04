@@ -272,6 +272,7 @@ class Scenario:
         self.__target_range = scenario['target_range']
         self.__swelring_model = scenario['swelring_model']
 
+        self.__clutter_rcs = scenario['clutter_rcs']
         self.__clutter_range = scenario['clutter_range']
         # self.__clutter_reflectivity = scenario['clutter_reflectivity']
         # self.__clutter_ds = scenario['clutter_ds']
@@ -317,15 +318,16 @@ class Scenario:
     # def generate_scenario(self):
     def scenario_generator(self, file_name='scenario.json'):
         default_scenario = {
-            "target_rcs": 1.0,
-            "target_range": 1000,
+            "target_rcs": 50.0,
+            "target_range": 50000,
             "swelring_model": 1,
-            "clutter_range": 2000,
+            "clutter_rcs": 100.0,
+            "clutter_range": 20000,
             "celerity": 300000000,  # Speed of light in m/s
             "wave_definition": "frequency",
             "frequency": 1e9,  # 1 GHz
             "wavelength": None,  # This will be calculated if wave_definition is frequency
-            "power": 10,  # in watts
+            "power": 1e6,  # in watts
             "antenna_gain": 20,  # in dBi
             "loss": 1,  # Loss factor
             "boltzmann_ct": 1.38e-23,  # Boltzmann constant
@@ -333,11 +335,11 @@ class Scenario:
             "system_temperature": 290,  # in Kelvin
             "noise_bandwight": 1e6,  # 1 MHz
             "noise": None,  # This will be calculated if noise_definition is temperature
-            "dwell_nb_burst": 10,
+            "dwell_nb_burst": 3,
             "dwell_total_duration": 1,  # in seconds
             "duty_cycle": 0.1,
-            "Nb": 1000,
-            "Kb": 100,
+            "Nb": 3,
+            "Kb": 2,
             "pfa": 1e-6,
             "desired_pd": 0.9
         }

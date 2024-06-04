@@ -6,6 +6,7 @@ Description:
 """
 # import Scenario as scn
 import numpy as np
+import scipy as sp
 from scipy.integrate import quad
 
 
@@ -53,7 +54,7 @@ class Swerling:
         return c1 * (1 - c2 * np.log(pfa))
 
     def sweling_V(self, pfa, snr):
-        inner_integrand = np.exp(2 * np.sqrt(s * x) * np.cos(theta))
+        # inner_integrand = np.exp(2 * np.sqrt(s * x) * np.cos(theta))
 
         def inner_integrand(theta, s, x):
             return np.exp(2 * np.sqrt(s * x) * np.cos(theta))
@@ -62,7 +63,7 @@ class Swerling:
             inner_integral, _ = quad(inner_integrand, 0, np.pi, args=(s, x))
             return np.exp(-(x + s)) * (1 / np.pi) * inner_integral
 
-        lower_limit = -np.log(p_fa)
+        lower_limit = -np.log(pfa)
         result, error = quad(outer_integrand, lower_limit, np.inf, args=(snr,))
         return result
 
@@ -78,5 +79,17 @@ class Swerling:
     #         return self.pd
     #     else:
     #         return "Model not implemented"
+
+# if __name__ == '__main__':
+#     snr = 15
+#     pfa = 1e-6
+#     swerling = Swerling()
+#     print(swerling.sweling_I_II(pfa, snr))
+#     print(swerling.sweling_III_IV(pfa, snr))
+#     print(swerling.sweling_V(pfa, snr))
+
+
+
+
 
 

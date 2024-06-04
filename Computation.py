@@ -8,7 +8,6 @@ Description:
 import numpy as np
 import Scenario as scn
 import Swerling as swr
-from Swerling import Swerling as swr
 from scipy.special import comb
 
 class Computation:
@@ -25,13 +24,16 @@ class Computation:
         self.__scenario = new_scenario
 
     def swerling_computation(self, pfa, snr):
-        swerling = swr.Swerling()
+        swerling_instance = swr.Swerling()
         if self.scenario.swelring_model in [1, 2]:
-            return swr.sweling_I_II(pfa, snr)
+            burst_pd = swerling_instance.sweling_I_II(pfa, snr)
+            return burst_pd
         elif self.scenario.swelring_model in [3, 4]:
-            return swr.sweling_III_IV(pfa, snr)
+            burst_pd = swerling_instance.sweling_III_IV(pfa, snr)
+            return burst_pd
         elif self.scenario.swelring_model == 5:
-            return swr.sweling_V(pfa, snr)
+            burst_pd = swerling_instance.sweling_V(pfa, snr)
+            return burst_pd
         else:
             return "Model not implemented"
 
@@ -50,19 +52,19 @@ class Computation:
     def S_computation(self, rcs, range):
         P = 10 * np.log10(self.scenario.power)
         G_antenna = self.scenario.antenna_gain
-        L = self.scenario.path_loss
+        L = self.scenario.loss
         G_lambda = 20 * np.log10(self.scenario.wavelength)
         G_clutter_rcs = 10 * np.log10(rcs)
         G_pc = 10 * np.log10(self.scenario.duty_cycle)
         L_range = 40 * np.log10(range)
-        L_coef = 30 * np;log10(4 * np.pi)
+        L_coef = 30 * np.log10(4 * np.pi)
         S = P + G_antenna + G_lambda + G_clutter_rcs + G_pc - L - L_range - L_coef
         return S
 
-    def snrc_computation(self):
+    def snrc_computation(self, s_clutter, s_target):
         noise = self.scenario.noise
-        clutter_raw_S = 10 ** (self.clutter_S / 10)
-        target_raw_S = 10 ** (self.target_S / 10)
+        clutter_raw_S = 10 ** (s_clutter / 10)
+        target_raw_S = 10 ** (s_target / 10)
         snrc = 10 * np.log10(target_raw_S / (clutter_raw_S + noise))
         return snrc
 
@@ -77,7 +79,7 @@ class Computation:
     def run(self):
         target_rcs = self.scenario.target_rcs
         target_range = self.scenario.target_range
-        s_target = self.S_computation(target_rcs, target_rcs)
+        s_target = self.S_computation(target_rcs, target_range)
 
         clutter_rcs = self.scenario.clutter_rcs
         clutter_range = self.scenario.clutter_range
@@ -92,3 +94,41 @@ class Computation:
 
         global_pd = self.global_pd_computation(nb, kb, burst_pd)
         print(f'Global pd: {global_pd}')
+        return global_pd
+
+if __name__ == '__main__':
+    scenario = scn.Scenario()
+    scenario.scenario_generator()
+    scenario.load_scenario('scenario.json')
+    computation = Computation(scenario)
+
+    target_rcs = computation.scenario.target_rcs
+    target_range = computation.scenario.target_range
+    s_target = computation.S_computation(target_rcs, target_range)
+    print(f'Target rcs: {target_rcs}')
+    print(f'Target range: {target_range}')
+    print(f'Target S: {s_target}')
+
+
+    clutter_rcs = computation.scenario.clutter_rcs
+    clutter_range = computation.scenario.clutter_range
+    s_clutter = computation.S_computation(clutter_rcs, clutter_range)
+    print(f'Clutter rcs: {clutter_rcs}')
+    print(f'Clutter range: {clutter_range}')
+    print(f'Clutter S: {s_clutter}')
+
+    snrc = computation.snrc_computation(s_clutter, s_target)
+    pfa = computation.scenario.pfa
+    print(f'SNRC: {snrc}')
+    print(f'PFA: {pfa}')
+
+    burst_pd = computation.swerling_computation(pfa, snrc)
+    nb = computation.scenario.Nb
+    kb = computation.scenario.Kb
+    print(f'Burst pd: {burst_pd}')
+    print(f'Nb: {nb}')
+    print(f'Kb: {kb}')
+
+    global_pd = computation.global_pd_computation(nb, kb, burst_pd)
+    print(f'Global pd: {global_pd}')
+
