@@ -343,7 +343,7 @@ class Scenario:
             "target_rcs": 2.0,
             "target_range": 10000,
             "swelring_model": 1,
-            "clutter_rcs": 0.0,
+            "clutter_rcs": 33.0,
             "clutter_range": 10000,
             "celerity": 3e8,  # Speed of light in m/s
             "wave_definition": "frequency",
@@ -369,17 +369,17 @@ class Scenario:
         }
 
         # Calculating derived values
-        if default_scenario['wave_definition'] == 'frequency':
-            default_scenario['wavelength'] = default_scenario['celerity'] / default_scenario['frequency']
-        elif default_scenario['wave_definition'] == 'wavelength':
-            default_scenario['frequency'] = default_scenario['celerity'] / default_scenario['wavelength']
+        if self.default_scenario['wave_definition'] == 'frequency':
+            self.default_scenario['wavelength'] = self.default_scenario['celerity'] / self.default_scenario['frequency']
+        elif self.default_scenario['wave_definition'] == 'wavelength':
+            self.default_scenario['frequency'] = self.default_scenario['celerity'] / self.default_scenario['wavelength']
 
-        if default_scenario['noise_definition'] == 'temperature':
-            default_scenario['noise'] = default_scenario['boltzmann_ct'] * default_scenario['system_temperature'] * default_scenario['noise_bandwight']
+        if self.default_scenario['noise_definition'] == 'temperature':
+            self.default_scenario['noise'] = self.default_scenario['boltzmann_ct'] * self.default_scenario['system_temperature'] * self.default_scenario['noise_bandwight']
 
         # Write the scenario to a JSON file
         with open(file_name, 'w') as file:
-            json.dump(default_scenario, file, indent=4)
+            json.dump(self.default_scenario, file, indent=4)
 
 
 # if __name__ == '__main__':

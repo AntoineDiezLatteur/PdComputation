@@ -67,6 +67,8 @@ import tkinter as tk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
+import Scenario as scn
+from Computation import Computation
 
 class InputFrame(ctk.CTkFrame):
     def __init__(self, master, scenario, *args, **kwargs):
@@ -145,8 +147,9 @@ class OutputFrame(ctk.CTkFrame):
     def run_program(self):
         x = np.linspace(0, 10, 100)
         y = np.sin(x)
-        Computation(self.scenario).run()
-        self.output_label.configure(text=f"Computed Result: {np.max(y)}")
+        Pd = Computation(self.scenario).run()
+        # self.output_label.configure(text=f"Computed Result: {np.max(y)}")
+        self.output_label.configure(text=f"Computed Pd: {Pd}")
 
         self.figure.clear()
         ax = self.figure.add_subplot(111)
