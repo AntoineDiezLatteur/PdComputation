@@ -45,6 +45,8 @@ class Scenario:
         self.pfa = 1e-6
         self.desired_pd = 0.9
 
+        self.default_scenario = {}
+
     @property
     def target_rcs(self):
         return self.__target_rcs
@@ -337,11 +339,11 @@ class Scenario:
 
     # def generate_scenario(self):
     def scenario_generator(self, file_name='scenario.json'):
-        default_scenario = {
+        self.default_scenario = {
             "target_rcs": 2.0,
             "target_range": 10000,
             "swelring_model": 1,
-            "clutter_rcs": 33.0,
+            "clutter_rcs": 0.0,
             "clutter_range": 10000,
             "celerity": 3e8,  # Speed of light in m/s
             "wave_definition": "frequency",

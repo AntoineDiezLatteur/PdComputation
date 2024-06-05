@@ -50,6 +50,8 @@ class Computation:
     #     return self.target_S
 
     def S_computation(self, rcs, range, G_doppler):
+        if rcs == 0 :
+            return 0
         P = 10 * np.log10(self.scenario.power)
         G_antenna = self.scenario.antenna_gain
         L = self.scenario.loss
@@ -86,9 +88,9 @@ class Computation:
         clutter_rcs = self.scenario.clutter_rcs
         clutter_range = self.scenario.clutter_range
         clutter_doppler_gain = self.scenario.doppler_gain_clutter
-        s_clutter = self.clutter_S_computation(clutter_rcs, clutter_range, clutter_doppler_gain)
+        s_clutter = self.S_computation(clutter_rcs, clutter_range, clutter_doppler_gain)
 
-        snrc = self.snrc_computation()
+        snrc = self.snrc_computation(s_clutter, s_target)
         pfa = self.scenario.pfa
 
         burst_pd = self.swerling_computation(pfa, snrc)
