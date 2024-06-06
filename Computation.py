@@ -73,7 +73,7 @@ class Computation:
 
     def global_pd_computation(self, nb, kb, burst_pd):
         global_pd = 0.0
-        for k in range(kb, nb + 1):
+        for k in range(int(kb), int(nb) + 1):
             binomial_coefficient = comb(nb, k)
             term = binomial_coefficient * (burst_pd ** k) * ((1 - burst_pd) ** (nb - k))
             global_pd += term
