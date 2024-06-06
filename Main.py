@@ -6,10 +6,10 @@ Description:
 """
 
 import argparse
-from Scenario import Scenario
-from Swerling import Swerling
-from Computation import Computation
-from Ihm import Ihm
+from src.Scenario import Scenario
+from src.Computation import Computation
+from src import Ihm
+
 
 class Main():
 
@@ -32,7 +32,7 @@ class Main():
     def main(self):
         scenario = Scenario()
         if self.args.edit:
-            Ihm().run()
+            Ihm().main()
 
         elif self.args.run:
             scenario.load_scenario(self.args.scenario)
