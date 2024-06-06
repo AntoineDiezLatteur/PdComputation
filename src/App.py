@@ -6,17 +6,9 @@ Description:
 """
 
 import customtkinter as ctk
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import numpy as np
 from src import Scenario as scn
-from src.Computation import Computation
 from src.frames.InputFrame import InputFrame
 from src.frames.OutputFrame import OutputFrame
-
-
-
-
 
 class App(ctk.CTk):
     def __init__(self):
@@ -36,7 +28,11 @@ class App(ctk.CTk):
         self.input_frame = InputFrame(master=self, scenario=self.scenario)
         self.output_frame = OutputFrame(master=self,scenario=self.scenario)
         print('HMI initialized')
+        # self.mainloop()
+
+    def main(self):
+        self.mainloop()
 
 if __name__ == "__main__":
     app = App()
-    app.mainloop()
+    app.main()

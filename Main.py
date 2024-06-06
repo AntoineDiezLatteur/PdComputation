@@ -8,7 +8,7 @@ Description:
 import argparse
 from src.Scenario import Scenario
 from src.Computation import Computation
-from src import Ihm
+from src.App import App
 
 
 class Main():
@@ -32,10 +32,10 @@ class Main():
     def main(self):
         scenario = Scenario()
         if self.args.edit:
-            Ihm().main()
+            App().main()
 
         elif self.args.run:
-            scenario.load_scenario(self.args.scenario)
+            scenario.load_scenario(scenario_file=self.args.scenario)
             Computation(scenario).run()
 
 

@@ -5,6 +5,8 @@ Date: 03/06/2024
 Description: 
 """
 import json
+from src.loader import DATA_PATH
+import os
 
 class Scenario:
 
@@ -52,7 +54,7 @@ class Scenario:
             "clutter_rcs": 33.0,
             "clutter_range": 10000,
             "celerity": 3e8,  # Speed of light in m/s
-            "wave_definition": "frequency",
+            # "wave_definition": "frequency",
             "frequency": 3.1e9,  # 1 GHz
             "wavelength": None,  # This will be calculated if wave_definition is frequency
             "power": 17920,  # in watts
@@ -61,7 +63,7 @@ class Scenario:
             "doppler_gain_clutter": -40,  # in dBi
             "loss": 9.7,  # Loss factor
             "boltzmann_ct": 1.38e-23,  # Boltzmann constant
-            "noise_definition": "temperature",
+            # "noise_definition": "temperature",
             "system_temperature": 1064,  # in Kelvin
             "noise_bandwight": 17575,  # 1 MHz
             "noise": None,  # This will be calculated if noise_definition is temperature
@@ -74,15 +76,42 @@ class Scenario:
             "desired_pd": 0.9
         }
 
-        # Calculating derived values
-        if self.default_scenario['wave_definition'] == 'frequency':
-            self.default_scenario['wavelength'] = self.default_scenario['celerity'] / self.default_scenario['frequency']
-        elif self.default_scenario['wave_definition'] == 'wavelength':
-            self.default_scenario['frequency'] = self.default_scenario['celerity'] / self.default_scenario['wavelength']
+        self.parameter_list = [
+            "target_rcs",
+            "target_range",
+            "swelring_model",
+            "clutter_rcs",
+            "clutter_range",
+            "celerity",
+            "frequency",
+            "wavelength",
+            "power",
+            "antenna_gain",
+            "doppler_gain_target",
+            "doppler_gain_clutter",
+            "loss",
+            "boltzmann_ct",
+            "system_temperature",
+            "noise_bandwight",
+            "noise",
+            "dwell_nb_burst",
+            "dwell_total_duration",
+            "duty_cycle",
+            "Nb",
+            "Kb",
+            "pfa",
+            "desired_pd"
+        ]
 
-        if self.default_scenario['noise_definition'] == 'temperature':
-            self.default_scenario['noise'] = self.default_scenario['boltzmann_ct'] * self.default_scenario[
-                'system_temperature'] * self.default_scenario['noise_bandwight']
+        # Calculating derived values
+        # if self.default_scenario['wave_definition'] == 'frequency':
+        #     self.default_scenario['wavelength'] = self.default_scenario['celerity'] / self.default_scenario['frequency']
+        # elif self.default_scenario['wave_definition'] == 'wavelength':
+        #     self.default_scenario['frequency'] = self.default_scenario['celerity'] / self.default_scenario['wavelength']
+        #
+        # if self.default_scenario['noise_definition'] == 'temperature':
+        #     self.default_scenario['noise'] = self.default_scenario['boltzmann_ct'] * self.default_scenario[
+        #         'system_temperature'] * self.default_scenario['noise_bandwight']
 
     def __str__(self):
         return f'Target RCS: {self.target_rcs} \nTarget range: {self.target_range} \nSWELRING model: {self.swelring_model} \nClutter RCS: {self.clutter_rcs} \nClutter range: {self.clutter_range} \nFrequency: {self.frequency} \nWavelength: {self.wavelength} \nPower: {self.power} \nAntenna gain: {self.antenna_gain} \nLoss: {self.loss} \nBoltzmann constant: {self.boltzmann_ct} \nSystem temperature: {self.system_temperature} \nNoise bandwight: {self.noise_bandwight} \nNoise: {self.noise} \nDwell number of burst: {self.dwell_nb_burst} \nDwell total duration: {self.dwell_total_duration} \nDuty cycle: {self.duty_cycle} \nNb: {self.Nb} \nKb: {self.Kb} \nPfa: {self.pfa} \nDesired Pd: {self.desired_pd}'
@@ -289,21 +318,21 @@ class Scenario:
     def desired_pd(self, new_desired_pd):
         self.__desired_pd = new_desired_pd
 
-    @property
-    def wave_definition(self):
-        return self.__wave_definition
-
-    @wave_definition.setter
-    def wave_definition(self, new_wave_definition):
-        self.__wave_definition = new_wave_definition
-
-    @property
-    def noise_definition(self):
-        return self.__noise_definition
-
-    @noise_definition.setter
-    def noise_definition(self, new_noise_definition):
-        self.__noise_definition = new_noise_definition
+    # @property
+    # def wave_definition(self):
+    #     return self.__wave_definition
+    #
+    # @wave_definition.setter
+    # def wave_definition(self, new_wave_definition):
+    #     self.__wave_definition = new_wave_definition
+    #
+    # @property
+    # def noise_definition(self):
+    #     return self.__noise_definition
+    #
+    # @noise_definition.setter
+    # def noise_definition(self, new_noise_definition):
+    #     self.__noise_definition = new_noise_definition
 
     @property
     def doppler_gain_target(self):
@@ -324,8 +353,9 @@ class Scenario:
     def main(self):
         pass
 
-    def load_scenario(self, scenario_file):
-        with open('scenario.json', 'r') as file:
+    def load_scenario(self, scenario_file='scenario.json'):
+
+        with open(f'{DATA_PATH}/{scenario_file}', 'r') as file:
             scenario = json.load(file)
 
         self.__target_rcs = scenario['target_rcs']
@@ -339,14 +369,13 @@ class Scenario:
 
         self.__celerity = scenario['celerity']
         self.__wave_definition = scenario['wave_definition']
-        if self.__wave_definition == 'frequency':
-            self.__frequency = scenario['frequency']
-            self.__wavelength = self.__celerity/self.__frequency
-        elif self.__wave_definition == 'wavelength':
-            self.__wavelength = scenario['wavelength']
-            self.__frequency = self.__celerity/self.__wavelength
-        else:
-            print('Wave definition not recognized')
+        self.__frequency = scenario['frequency']
+        self.__wavelength = self.__celerity/self.__frequency
+        # elif self.__wave_definition == 'wavelength':
+        #     self.__wavelength = scenario['wavelength']
+        #     self.__frequency = self.__celerity/self.__wavelength
+        # else:
+        #     print('Wave definition not recognized')
 
         self.__power = scenario['power']
         self.__antenna_gain = scenario['antenna_gain']
@@ -356,16 +385,16 @@ class Scenario:
 
         self.__boltzmann_ct = scenario['boltzmann_ct']
         self;__noise_definition = scenario['noise_definition']
-        if scenario['noise_definition'] == 'temperature':
-            self.__system_temperature = scenario['system_temperature']
-            self.__noise_bandwight = scenario['noise_bandwight']
-            self.__noise = self.__boltzmann_ct * self.__system_temperature * self.__noise_bandwight
-        elif self.__noise_definition == 'independant':
-            self.__noise = scenario['noise']
-            self.__system_temperature = None
-            self.__noise_bandwight = None
-        else:
-            print('Noise definition not recognized')
+        # if scenario['noise_definition'] == 'temperature':
+        self.__system_temperature = scenario['system_temperature']
+        self.__noise_bandwight = scenario['noise_bandwight']
+        self.__noise = self.__boltzmann_ct * self.__system_temperature * self.__noise_bandwight
+        # elif self.__noise_definition == 'independant':
+        #     self.__noise = scenario['noise']
+        #     self.__system_temperature = None
+        #     self.__noise_bandwight = None
+        # else:
+        #     print('Noise definition not recognized')
 
         self.__dwell_nb_burst = scenario['dwell_nb_burst']
         self.__dwell_total_duration = scenario['dwell_total_duration']
@@ -382,11 +411,11 @@ class Scenario:
 
         if scenario != None:
             self.default_scenario = scenario
-            self.default_scenario['wave_definition'] = 'frequency'
-            self.default_scenario['noise_definition'] = 'temperature'
+            # self.default_scenario['wave_definition'] = 'frequency'
+            # self.default_scenario['noise_definition'] = 'temperature'
 
         # Write the scenario to a JSON file
-        with open(file_name, 'w') as file:
+        with open(os.path.join(DATA_PATH, file_name), 'w') as file:
             json.dump(self.default_scenario, file, indent=4)
 
 

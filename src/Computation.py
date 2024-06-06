@@ -6,9 +6,10 @@ Description:
 """
 
 import numpy as np
-import Scenario as scn
-import Swerling as swr
+import src.Scenario as scn
+import src.Swerling as swr
 from scipy.special import comb
+
 
 class Computation:
 
@@ -103,8 +104,8 @@ class Computation:
 
 if __name__ == '__main__':
     scenario = scn.Scenario()
-    scenario.scenario_generator()
-    scenario.load_scenario('scenario.json')
+    # scenario.scenario_generator(file_name='scenario.json')
+    scenario.load_scenario(scenario_file='default_scenario.json')
     computation = Computation(scenario)
 
     target_rcs = computation.scenario.target_rcs

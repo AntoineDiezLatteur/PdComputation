@@ -7,6 +7,9 @@ Description:
 
 import customtkinter as ctk
 import numpy as np
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from src.Computation import Computation
 class OutputFrame(ctk.CTkFrame):
     def __init__(self, master, scenario, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
