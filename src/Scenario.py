@@ -21,7 +21,7 @@ class Scenario:
         # self.__clutter_ds = 200
         # self.__clutter_rcs = self.__clutter_reflectivity * self.__clutter_ds
 
-        self.__wave_definition = None
+        # self.__wave_definition = None
         self.__frequency = None
         self.__celerity = 3e8
         self.__wavelength = None
@@ -32,8 +32,8 @@ class Scenario:
         self.__doppler_gain_clutter = None
         self.__loss = None
 
-        self.__noise_definition = None
-        self.__boltzmann_ct = 1.380649e-23
+        # self.__noise_definition = None
+        self.__boltzmann_ct = 1.38e-23
         self.__system_temperature = None
         self.__noise_bandwight = None
         self.__noise = None
@@ -183,7 +183,6 @@ class Scenario:
     def frequency(self, new_frequency):
         self.__frequency = new_frequency
         self.__wavelength = self.__celerity/self.__frequency
-        self.__wave_definition = 'frequency'
         print(f'Wavelength updated to {self.__wavelength} m')
 
     @property
@@ -198,7 +197,6 @@ class Scenario:
     def wavelength(self, new_wavelength):
         self.__wavelength = new_wavelength
         self.__frequency = self.__celerity/self.__wavelength
-        self.__wave_definition = 'wavelength'
         print(f'Frequency updated to {self.__frequency} Hz')
 
     @property
@@ -236,8 +234,12 @@ class Scenario:
     @system_temperature.setter
     def system_temperature(self, new_system_temperature):
         self.__system_temperature = new_system_temperature
-        self.__noise = self.__boltzmann_ct * self.__system_temperature * self.__noise_bandwight
-        self.__noise_definition = 'temperature'
+        try :
+            self.__noise = self.__boltzmann_ct * self.__system_temperature * self.__noise_bandwight
+        except TypeError:
+            pass
+        # if self.noise_bandwight != None:
+        #     self.__noise = self.__boltzmann_ct * self.__system_temperature * self.__noise_bandwight
         print(f'Noise updated to {self.__noise} W')
 
 
@@ -248,8 +250,12 @@ class Scenario:
     @noise_bandwight.setter
     def noise_bandwight(self, new_noise_bandwight):
         self.__noise_bandwight = new_noise_bandwight
-        self.__noise = self.__boltzmann_ct * self.__system_temperature * self.__noise_bandwight
-        self.__noise_definition = 'temperature'
+        try :
+            self.__noise = self.__boltzmann_ct * self.__system_temperature * self.__noise_bandwight
+        except TypeError:
+            pass
+        # if self.system_temperature != None:
+        #     self.__noise = self.__boltzmann_ct * self.__system_temperature * self.__noise_bandwight
         print(f'Noise updated to {self.__noise} W')
 
     @property
@@ -259,7 +265,6 @@ class Scenario:
     @noise.setter
     def noise(self, new_noise):
         self.__noise = new_noise
-        self.__noise_definition = 'independant'
         print('Noise updated independently of the system temperature and noise bandwight')
 
     @property
@@ -353,9 +358,10 @@ class Scenario:
     def main(self):
         pass
 
-    def load_scenario(self, scenario_file='scenario.json'):
-
-        with open(f'{DATA_PATH}/{scenario_file}', 'r') as file:
+    def load_scenario(self, scenario_file='scenario.json', total_path=False):
+        data_path = f'{DATA_PATH}/{scenario_file}' if not total_path else scenario_file
+        print(data_path)
+        with open(data_path, 'r') as file:
             scenario = json.load(file)
 
         self.__target_rcs = scenario['target_rcs']

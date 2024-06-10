@@ -10,14 +10,16 @@ import numpy as np
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from src.Computation import Computation
+
 class OutputFrame(ctk.CTkFrame):
     def __init__(self, master, scenario, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
-        self.grid(row=0, column=1, padx=10, pady=10, sticky="nswe")
+        self.grid(row=0, column=1, padx=(5, 10), pady=(10, 10), sticky="nswe")
         self.scenario = scenario
 
         self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(4, weight=1)
 
         self.create_widgets()
 
@@ -36,9 +38,10 @@ class OutputFrame(ctk.CTkFrame):
 
         self.figure = Figure(figsize=(5, 4), dpi=100)
         self.canvas = FigureCanvasTkAgg(self.figure, master=self)
-        self.canvas.get_tk_widget().grid(row=4, column=0, pady=10, padx=10)
+        self.canvas.get_tk_widget().grid(row=4, column=0, pady=(10, 20), padx=10)
 
     def run_program(self):
+        print(self.scenario)
         x = np.linspace(0, 10, 100)
         y = np.sin(x)
         Pd = Computation(self.scenario).run()
