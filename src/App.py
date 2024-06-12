@@ -29,6 +29,7 @@ class App(ctk.CTk):
         self.input_frame = InputFrame(master=self, scenario=self.scenario)
         self.output_frame = OutputFrame(master=self,scenario=self.scenario)
         self.load_frame = JsonLoaderFrame(master=self, scenario=self.scenario)
+
         print('HMI initialized')
         # self.mainloop()
 

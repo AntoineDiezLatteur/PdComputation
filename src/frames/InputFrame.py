@@ -40,14 +40,14 @@ class InputFrame(ctk.CTkScrollableFrame):
             #     entry = ctk.CTkEntry(self, placeholder_text='Computed')
             #     entry.grid(row=i, column=1, pady=5, sticky="w", padx=5)
             #     entry.configure(state='disabled')
-            elif param == 'celerity' or param == 'boltzmann_ct':
+            elif param == 'celerity' :
                 entry = ctk.CTkEntry(self, placeholder_text='Default value : 3e8')
                 entry.grid(row=i, column=1, pady=5, sticky="w", padx=5)
                 entry.configure(state='disabled')
-            # elif param == 'boltzmann_ct':
-            #     entry = ctk.CTkEntry(self, placeholder_text='Default value : 1.38e-23')
-            #     entry.grid(row=i, column=1, pady=5, sticky="w", padx=5)
-            #     entry.configure(state='disabled')
+            elif param == 'boltzmann_ct':
+                entry = ctk.CTkEntry(self, placeholder_text='Default value : 1.38e-23')
+                entry.grid(row=i, column=1, pady=5, sticky="w", padx=5)
+                entry.configure(state='disabled')
             else :
                 entry = ctk.CTkEntry(self, placeholder_text='Enter a value')
                 entry.grid(row=i, column=1, pady=5, sticky="w", padx=5)

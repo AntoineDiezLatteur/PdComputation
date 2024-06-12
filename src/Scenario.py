@@ -4,14 +4,17 @@ Author: antoi
 Date: 03/06/2024
 Description: 
 """
+
 import json
 from src.loader import DATA_PATH
 import os
+from dataclasses import dataclass
+from typing import Optional
 
 class Scenario:
 
     def __init__(self):
-        self.__target_rcs = None
+
         self.__target_range = None
         self.__swelring_model = None
 
@@ -44,6 +47,11 @@ class Scenario:
         self.Nb = None
         self.Kb = None
 
+        self.tau = None
+        self.azimuth_angle = None
+        self.radar_height = None
+        self.clutter_reflectivity = None
+
         self.pfa = 1e-6
         self.desired_pd = 0.9
 
@@ -73,7 +81,11 @@ class Scenario:
             "Nb": 4,
             "Kb": 2,
             "pfa": 1e-6,
-            "desired_pd": 0.9
+            "desired_pd": 0.9,
+            "tau": 5e-5,
+            "azimuth_angle": 3,
+            "radar_height": 20,
+            "clutter_reflectivity": 1e-2
         }
 
         self.parameter_list = [
@@ -100,7 +112,11 @@ class Scenario:
             "Nb",
             "Kb",
             "pfa",
-            "desired_pd"
+            "desired_pd",
+            "tau",
+            "azimuth_angle",
+            "radar_height",
+            "clutter_reflectivity"
         ]
 
         # Calculating derived values
@@ -131,6 +147,7 @@ class Scenario:
     @target_range.setter
     def target_range(self, new_target_range):
         self.__target_range = new_target_range
+
 
     @property
     def swelring_model(self):
@@ -196,7 +213,8 @@ class Scenario:
     @wavelength.setter
     def wavelength(self, new_wavelength):
         self.__wavelength = new_wavelength
-        self.__frequency = self.__celerity/self.__wavelength
+        freq = self.__celerity/self.__wavelength
+        self.__frequency = freq
         print(f'Frequency updated to {self.__frequency} Hz')
 
     @property
@@ -235,7 +253,8 @@ class Scenario:
     def system_temperature(self, new_system_temperature):
         self.__system_temperature = new_system_temperature
         try :
-            self.__noise = self.__boltzmann_ct * self.__system_temperature * self.__noise_bandwight
+            noise = self.__boltzmann_ct * self.__system_temperature * self.__noise_bandwight
+            self.__noise = noise
         except TypeError:
             pass
         # if self.noise_bandwight != None:
@@ -251,7 +270,8 @@ class Scenario:
     def noise_bandwight(self, new_noise_bandwight):
         self.__noise_bandwight = new_noise_bandwight
         try :
-            self.__noise = self.__boltzmann_ct * self.__system_temperature * self.__noise_bandwight
+            noise = self.__boltzmann_ct * self.__system_temperature * self.__noise_bandwight
+            self.__noise = noise
         except TypeError:
             pass
         # if self.system_temperature != None:
@@ -410,6 +430,11 @@ class Scenario:
 
         self.pfa = scenario['pfa']
         self.desired_pd = scenario['desired_pd']
+
+        self.tau = scenario['tau']
+        self.azimuth_angle = scenario['azimuth_angle']
+        self.radar_height = scenario['radar_height']
+        self.clutter_reflectivity = scenario['clutter_reflectivity']
         print('Scenario loaded')
 
     # def generate_scenario(self):
@@ -431,3 +456,100 @@ class Scenario:
 #     scenario.scenario_generator()
 #     scenario.load_scenario('scenario.json')
 #     print(scenario.target_rcs)
+
+# @dataclass
+# class Scenario:
+#     target_rcs: float
+#     target_range: float
+#     swelring_model: int
+#     clutter_rcs: float
+#     clutter_range: float
+#     frequency: float
+#     power: float
+#     antenna_gain: float
+#     doppler_gain_target: float
+#     doppler_gain_clutter: float
+#     loss: float
+#     boltzmann_ct: float = 1.38e-23
+#     system_temperature: float
+#     noise_bandwight: float
+#     noise: float
+#     dwell_nb_burst: int
+#     dwell_total_duration: float
+#     duty_cycle: float
+#     Nb: int
+#     Kb: int
+#     pfa: float
+#     desired_pd: float
+#     wavelength: Optional[float] = None
+#     celerity: float = 3e8
+#     noise: Optional[float] = None
+#     # wave_definition: str = 'frequency'
+#     # noise_definition: str = 'temperature'
+#
+#     def __post_init__(self):
+#         if self.wavelength is None:
+#             self.wavelength = self.celerity / self.frequency
+#         if self.noise is None:
+#             self.noise = self.boltzmann_ct * self.system_temperature * self.noise_bandwight
+#         if self.swelring_model not in [1, 2, 3, 4]:
+#             raise ValueError('The Swelring model must be 1, 2 or 3')
+#         if self.desired_pd > 1 or self.desired_pd < 0:
+#             raise ValueError('The desired probability of detection must be between 0 and 1')
+#         if self.pfa > 1 or self.pfa < 0:
+#             raise ValueError('The probability of false alarm must be between 0 and 1')
+#         if self.duty_cycle > 1 or self.duty_cycle < 0:
+#             raise ValueError('The duty cycle must be between 0 and 1')
+#         if self.dwell_nb_burst < 0:
+#             raise ValueError('The number of bursts per dwell must be positive')
+#         if self.dwell_total_duration < 0:
+#             raise ValueError('The total duration of the dwell must be positive')
+#         if self.Nb < 0:
+#             raise ValueError('The number of bursts must be positive')
+#         if self.Kb < 0:
+#             raise ValueError('The number of bursts must be positive')
+#         if self.clutter_rcs < 0:
+#             raise ValueError('The clutter RCS must be positive')
+#         if self.clutter_range < 0:
+#             raise ValueError('The clutter range must be positive')
+#         if self.target_rcs < 0:
+#             raise ValueError('The target RCS must be positive')
+#         if self.target_range < 0:
+#             raise ValueError('The target range must be positive')
+#         if self.frequency < 0:
+#             raise ValueError('The frequency must be positive')
+#         if self.power < 0:
+#             raise ValueError('The power must be positive')
+#         if self.antenna_gain < 0:
+#             raise ValueError('The antenna gain must be positive')
+#         if self.doppler_gain_target < 0:
+#             raise ValueError('The target Doppler gain must be positive')
+#         if self.doppler_gain_clutter < 0:
+#             raise ValueError('The clutter Doppler gain must be positive')
+#         if self.loss < 0:
+#             raise ValueError('The loss must be positive')
+#         if self.boltzmann_ct < 0:
+#             raise ValueError('The Boltzmann constant must be positive')
+#         if self.system_temperature < 0:
+#             raise ValueError('The system temperature must be positive')
+#         if self.noise_bandwight < 0:
+#             raise ValueError('The noise bandwidth must be positive')
+#         if self.noise < 0:
+#             raise ValueError('The noise must be positive')
+#         print('Scenario loaded')
+#         self._subject = Subject()
+#
+#     def subscribe(self, observer):
+#         self._subject.subscribe(observer)
+#
+#     def __str__(self):
+#         return f'Target RCS: {self.target_rcs} \nTarget range: {self.target_range} \nSWELRING model: {self.swelring_model} \nClutter RCS: {self.clutter_rcs} \nClutter range: {self.clutter_range} \nFrequency: {self.frequency} \nWavelength: {self.wavelength} \nPower: {self.power} \nAntenna gain: {self.antenna_gain} \nLoss: {self.loss} \nBoltzmann constant: {self.boltzmann_ct} \nSystem temperature: {self.system_temperature} \nNoise bandwight: {self.noise_bandwight} \nNoise: {self.noise} \nDwell number of burst: {self.dwell_nb_burst} \nDwell total duration: {self.dwell_total_duration} \nDuty cycle: {self.duty_cycle} \nNb: {self.Nb} \nKb: {self.Kb} \nPfa: {self.pfa} \nDesired Pd: {self.desired_pd}'
+#
+#
+#     def load_scenario(self, scenario_file='scenario.json', total_path=False):
+#         data_path = f'{DATA_PATH}/{scenario_file}' if not total_path else scenario_file
+#         with open(data_path, 'r') as file:
+#             scenario = json.load(file)
+#
+#         return Scenario(**scenario)
+#

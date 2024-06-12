@@ -56,24 +56,6 @@ class JsonLoaderFrame(ctk.CTkFrame):
     def load_json_file(self):
         if self.json_path:
             try:
-                # with open(self.json_path, 'r') as file:
-                #     data = json.load(file)
-                #     formatted_json = json.dumps(data, indent=4)
-                #     self.json_textbox.delete("1.0", "end")
-                #     self.json_textbox.insert("1.0", formatted_json)
                 self.scenario.load_scenario(self.json_path, total_path=True)
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to load JSON file: {e}")
-
-
-# if __name__ == "__main__":
-#     app = ctk.CTk()
-#     app.geometry("800x600")
-#     app.title("JSON Loader")
-#
-#     frame = JsonLoaderFrame(app)
-#     frame.pack(fill="both", expand=True)
-#
-#     app.mainloop()
-
-

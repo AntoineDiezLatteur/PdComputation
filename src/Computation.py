@@ -24,6 +24,18 @@ class Computation:
     def scenario(self, new_scenario):
         self.__scenario = new_scenario
 
+    def ds_computation(self, range):
+        c = self.scenario.celerity
+        h = self.scenario.radar_height
+        theta_az = self.scenario.azimuth_angle
+        tau = self.scenario.tau
+
+        a1 = 0.5 * range * np.tan(np.deg2rad(theta_az/2))
+        a2 = (c * tau) / (np.cos(np.arcsin(h / range)))
+        a3 = np.sqrt(np.pi / (2* np.log(2)))
+
+        return a1 * a2 * a3
+
     def swerling_computation(self, pfa, snr):
         swerling_instance = swr.Swerling()
         if self.scenario.swelring_model in [1, 2]:
@@ -65,7 +77,7 @@ class Computation:
         S = P + G_antenna + G_doppler + G_lambda + G_clutter_rcs + G_pc - L - L_range - L_4pi3
         return S
 
-    def snrc_computation(self, s_clutter, s_target):
+    def snrc_computation(self, s_clutter : float, s_target : float) -> float:
         noise = self.scenario.noise
         clutter_raw_S = 10 ** (s_clutter / 10)
         target_raw_S = 10 ** (s_target / 10)
@@ -86,8 +98,17 @@ class Computation:
         target_doppler_gain = self.scenario.doppler_gain_target
         s_target = self.S_computation(target_rcs, target_range, target_doppler_gain)
 
-        clutter_rcs = self.scenario.clutter_rcs
         clutter_range = self.scenario.clutter_range
+        clutter_rcs = self.scenario.clutter_rcs
+        ds = self.ds_computation(clutter_range)
+        reflectivity = self.scenario.clutter_reflectivity
+        print(f'Clutter range: {clutter_range}')
+        print(f'reflectivity: {reflectivity}')
+        print(f'reflectivity in db: {10 * np.log10(reflectivity)}')
+        print(f'ds: {ds}')
+        clutter_rcs = reflectivity * ds
+        print(f'Clutter rcs: {clutter_rcs}')
+        print(f'clutter rcs in db: {10 * np.log10(clutter_rcs)}')
         clutter_doppler_gain = self.scenario.doppler_gain_clutter
         s_clutter = self.S_computation(clutter_rcs, clutter_range, clutter_doppler_gain)
 
@@ -95,6 +116,7 @@ class Computation:
         pfa = self.scenario.pfa
 
         burst_pd = self.swerling_computation(pfa, snrc)
+        print(f'Burst pd: {burst_pd}')
         nb = self.scenario.Nb
         kb = self.scenario.Kb
 
