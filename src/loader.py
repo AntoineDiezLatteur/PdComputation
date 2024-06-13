@@ -8,11 +8,13 @@ Description:
 import os
 
 class Loader:
-    def __init__(self, folder):
-        self.data_path = os.path.dirname(os.path.abspath(__file__)) + '/../' + folder
+    def __init__(self):
+        self.data_path = os.path.dirname(os.path.abspath(__file__)) + '/../data'
+        self.config_paht = os.path.dirname(os.path.abspath(__file__)) + '/../config'
 
 
-loader = Loader('data')
+loader = Loader()
 DATA_PATH = loader.data_path
+CONFIG_PATH = loader.config_paht
 
-__all__ = ['DATA_PATH']
+__all__ = ['DATA_PATH', 'CONFIG_PATH']

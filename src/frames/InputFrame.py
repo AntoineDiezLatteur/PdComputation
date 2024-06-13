@@ -34,7 +34,7 @@ class InputFrame(ctk.CTkScrollableFrame):
 
             if param == 'wavelength' or param == 'noise':
                 entry = ctk.CTkEntry(self, placeholder_text='Computed')
-                entry.grid(row=i, column=1, pady=5, sticky="ew", padx=5)
+                entry.grid(row=i, column=1, pady=5, sticky="w", padx=5)
                 entry.configure(state='disabled')
             # elif param == 'noise':
             #     entry = ctk.CTkEntry(self, placeholder_text='Computed')

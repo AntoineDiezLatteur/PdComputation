@@ -79,9 +79,20 @@ class Computation:
 
     def snrc_computation(self, s_clutter : float, s_target : float) -> float:
         noise = self.scenario.noise
-        clutter_raw_S = 10 ** (s_clutter / 10)
         target_raw_S = 10 ** (s_target / 10)
-        snrc = 10 * np.log10(target_raw_S / (clutter_raw_S + noise))
+        if s_clutter == 0:
+            snrc = target_raw_S / noise
+            return snrc
+        else:
+            clutter_raw_S = 10 ** (s_clutter / 10)
+            print(f'clutter_raw_S {clutter_raw_S}')
+            print(f'10 ** ((s_clutter - 30)/ 10) {10 ** ((s_clutter - 30)/ 10)}')
+            print(f'target_raw_S {target_raw_S}')
+            # snrc = 10 * np.log10(target_raw_S / (clutter_raw_S + noise))
+            snrc = target_raw_S / (clutter_raw_S + noise)
+            print(f'noise {noise}')
+            print(f'snrc {snrc}')
+            print(10 * np.log10(snrc))
         return snrc
 
     def global_pd_computation(self, nb, kb, burst_pd):
@@ -111,8 +122,12 @@ class Computation:
         print(f'clutter rcs in db: {10 * np.log10(clutter_rcs)}')
         clutter_doppler_gain = self.scenario.doppler_gain_clutter
         s_clutter = self.S_computation(clutter_rcs, clutter_range, clutter_doppler_gain)
+        print(f'Clutter S: {s_clutter}')
 
         snrc = self.snrc_computation(s_clutter, s_target)
+        print(f'SNRC: {snrc}')
+        snrc_sidelobe = self.snrc_computation(s_clutter - 30, s_target)
+        print(f'SNRC sidelobe: {snrc_sidelobe}')
         pfa = self.scenario.pfa
 
         burst_pd = self.swerling_computation(pfa, snrc)
@@ -124,10 +139,72 @@ class Computation:
         print(f'Global pd: {global_pd}')
         return global_pd
 
+    def range_analysis(self):
+        x = np.linspace(1, 100000, 100)
+        y = []
+        z = []
+        w = []
+        # target_rcs = self.scenario.target_rcs
+        # target_doppler_gain = self.scenario.doppler_gain_target
+        #
+        # clutter_range = self.scenario.clutter_range
+        # clutter_rcs = self.scenario.clutter_rcs
+        # ds = self.ds_computation(clutter_range)
+        # reflectivity = self.scenario.clutter_reflectivity
+        # clutter_rcs = reflectivity * ds
+        #
+        # clutter_doppler_gain = self.scenario.doppler_gain_clutter
+        # s_clutter = self.S_computation(clutter_rcs, clutter_range, clutter_doppler_gain)
+
+        # pfa = self.scenario.pfa
+        # nb = self.scenario.Nb
+        # kb = self.scenario.Kb
+
+        for i in x:
+
+            target_range = i
+
+            target_rcs = self.scenario.target_rcs
+            target_doppler_gain = self.scenario.doppler_gain_target
+
+            clutter_range = i
+            clutter_rcs = self.scenario.clutter_rcs
+            ds = self.ds_computation(clutter_range)
+            reflectivity = self.scenario.clutter_reflectivity
+            clutter_rcs = reflectivity * ds
+
+            clutter_doppler_gain = self.scenario.doppler_gain_clutter
+            s_clutter = self.S_computation(clutter_rcs, clutter_range, clutter_doppler_gain)
+            s_clutter_side_lobe = s_clutter - 30
+
+            pfa = self.scenario.pfa
+            nb = self.scenario.Nb
+            kb = self.scenario.Kb
+
+            s_target = self.S_computation(target_rcs, target_range, target_doppler_gain)
+            snrc = self.snrc_computation(s_clutter, s_target)
+            snr = self.snrc_computation(0, s_target)
+            snrc_side_lobe = self.snrc_computation(s_clutter_side_lobe, s_target)
+
+            burst_pd = self.swerling_computation(pfa, snrc)
+            burst_pd_wo_clutter = self.swerling_computation(pfa, snr)
+            burst_pd_side_lobe = self.swerling_computation(pfa, snrc_side_lobe)
+
+            global_pd = self.global_pd_computation(nb, kb, burst_pd)
+            global_pd_wo_clutter = self.global_pd_computation(nb, kb, burst_pd_wo_clutter)
+            global_pd_side_lobe = self.global_pd_computation(nb, kb, burst_pd_side_lobe)
+            y.append(global_pd)
+            z.append(global_pd_wo_clutter)
+            w.append(global_pd_side_lobe)
+            # y.append(10 * np.log10(snrc))
+            # z.append(10 * np.log10(snrc_side_lobe))
+            # w.append(10 * np.log10(snr))
+        return x, y, z, w
+
 if __name__ == '__main__':
     scenario = scn.Scenario()
     # scenario.scenario_generator(file_name='scenario.json')
-    scenario.load_scenario(scenario_file='default_scenario.json')
+    scenario.load_scenario(scenario_file='config.json')
     computation = Computation(scenario)
 
     target_rcs = computation.scenario.target_rcs
@@ -150,17 +227,13 @@ if __name__ == '__main__':
     snrc = computation.snrc_computation(s_clutter, s_target)
     pfa = computation.scenario.pfa
     noise = computation.scenario.noise
-    print(f'Noise: {10 * np.log10(noise)}')
-    print(f'SNRC: {snrc}')
-    print(f'PFA: {pfa}')
+
 
     burst_pd = computation.swerling_computation(pfa, snrc)
     nb = computation.scenario.Nb
     kb = computation.scenario.Kb
-    print(f'Burst pd: {burst_pd}')
-    print(f'Nb: {nb}')
-    print(f'Kb: {kb}')
+
 
     global_pd = computation.global_pd_computation(nb, kb, burst_pd)
-    print(f'Global pd: {global_pd}')
+
 

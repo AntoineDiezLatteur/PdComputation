@@ -7,6 +7,7 @@ Description:
 
 import json
 from src.loader import DATA_PATH
+from src.loader import CONFIG_PATH
 import os
 from dataclasses import dataclass
 from typing import Optional
@@ -435,6 +436,67 @@ class Scenario:
         self.azimuth_angle = scenario['azimuth_angle']
         self.radar_height = scenario['radar_height']
         self.clutter_reflectivity = scenario['clutter_reflectivity']
+        print('Scenario loaded')
+
+    def config(self, config_file='config.json'):
+        config_path = f'{CONFIG_PATH}/{config_file}'
+        with open(config_path, 'r') as file:
+            scenario = json.load(file)
+
+        self.__target_rcs = scenario['target_rcs']
+        self.__swelring_model = scenario['swelring_model']
+        self.__clutter_rcs = scenario['clutter_rcs']
+        self.Nb = scenario['Nb']
+        self.Kb = scenario['Kb']
+        self.azimuth_angle = scenario['azimuth_angle']
+        self.radar_height = scenario['radar_height']
+        self.clutter_reflectivity = scenario['clutter_reflectivity']
+
+
+        self.__target_range = scenario['target_range']
+        self.__clutter_range = scenario['clutter_range']
+        # self.__clutter_reflectivity = scenario['clutter_reflectivity']
+        # self.__clutter_ds = scenario['clutter_ds']
+
+        self.__celerity = scenario['celerity']
+        self.__wave_definition = scenario['wave_definition']
+        self.__frequency = scenario['frequency']
+        self.__wavelength = self.__celerity/self.__frequency
+        # elif self.__wave_definition == 'wavelength':
+        #     self.__wavelength = scenario['wavelength']
+        #     self.__frequency = self.__celerity/self.__wavelength
+        # else:
+        #     print('Wave definition not recognized')
+
+        self.__power = scenario['power']
+        self.__antenna_gain = scenario['antenna_gain']
+        self.__doppler_gain_target = scenario['doppler_gain_target']
+        self.__doppler_gain_clutter = scenario['doppler_gain_clutter']
+        self.__loss = scenario['loss']
+
+        self.__boltzmann_ct = scenario['boltzmann_ct']
+        self;__noise_definition = scenario['noise_definition']
+        # if scenario['noise_definition'] == 'temperature':
+        self.__system_temperature = scenario['system_temperature']
+        self.__noise_bandwight = scenario['noise_bandwight']
+        self.__noise = self.__boltzmann_ct * self.__system_temperature * self.__noise_bandwight
+        # elif self.__noise_definition == 'independant':
+        #     self.__noise = scenario['noise']
+        #     self.__system_temperature = None
+        #     self.__noise_bandwight = None
+        # else:
+        #     print('Noise definition not recognized')
+
+        self.__dwell_nb_burst = scenario['dwell_nb_burst']
+        self.__dwell_total_duration = scenario['dwell_total_duration']
+        self.__duty_cycle = scenario['duty_cycle']
+
+
+        self.pfa = scenario['pfa']
+        self.desired_pd = scenario['desired_pd']
+
+        self.tau = scenario['tau']
+
         print('Scenario loaded')
 
     # def generate_scenario(self):

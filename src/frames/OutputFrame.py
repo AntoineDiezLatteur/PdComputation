@@ -38,21 +38,25 @@ class OutputFrame(ctk.CTkFrame):
 
         self.figure = Figure(figsize=(5, 4), dpi=100)
         self.canvas = FigureCanvasTkAgg(self.figure, master=self)
-        self.canvas.get_tk_widget().grid(row=4, column=0, pady=(10, 20), padx=10)
+        self.canvas.get_tk_widget().grid(row=4, column=0, pady=(10, 20), padx=20, sticky="nswe")
 
     def run_program(self):
         print(self.scenario)
-        x = np.linspace(0, 10, 100)
-        y = np.sin(x)
+
         Pd = Computation(self.scenario).run()
-        # self.output_label.configure(text=f"Computed Result: {np.max(y)}")
         self.output_label.configure(text=f"Computed Pd: {Pd}")
+
+
+
+    def range_computation(self):
+        print('Range computation')
+        x, y, z, w = Computation(self.scenario).range_analysis()
 
         self.figure.clear()
         ax = self.figure.add_subplot(111)
         ax.plot(x, y)
+        ax.plot(x, z)
+        ax.plot(x, w)
+        ax.legend(['Pd w/ clutter', 'Pd w/o clutter', 'Pd w/ clutter in sidelobe'])
         self.canvas.draw()
-
-    def range_computation(self):
-        print('Range computation')
         pass
