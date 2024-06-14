@@ -18,7 +18,6 @@ class App(ctk.CTk):
         self.title("Custom Tkinter HMI")
         self.geometry("800x600")
         self.scenario = scn.Scenario()
-        self.scenario.scenario_generator()
 
         # Configure the grid layout for the main window
         self.grid_columnconfigure(0, weight=1)
@@ -29,6 +28,7 @@ class App(ctk.CTk):
         self.input_frame = InputFrame(master=self, scenario=self.scenario)
         self.output_frame = OutputFrame(master=self,scenario=self.scenario)
         self.load_frame = JsonLoaderFrame(master=self, scenario=self.scenario)
+        self.scenario.subscribe(self.input_frame.update)
 
         print('HMI initialized')
         # self.mainloop()

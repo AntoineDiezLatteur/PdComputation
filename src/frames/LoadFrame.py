@@ -8,16 +8,15 @@ Description:
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 import json
-
+from src.loader import DATA_PATH
 
 class JsonLoaderFrame(ctk.CTkFrame):
     def __init__(self, master, scenario, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.scenario = scenario
-        self.json_path = ""
+        self.json_path = DATA_PATH + '/default_scenario.json'
 
-        # self.pack(fill="both", expand=True)
         self.grid(row=1, column=0, columnspan=2, padx=(10, 10), pady=(5, 10), sticky="ew")
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=3)
@@ -26,19 +25,19 @@ class JsonLoaderFrame(ctk.CTkFrame):
 
         # Button to open file dialog
         self.open_button = ctk.CTkButton(self, text="Browse", command=self.open_file_dialog)
-        # self.open_button.pack(pady=20)
         self.open_button.grid(row=0, column=0, padx=(10, 5), pady=10, sticky="ew")
 
         # Button to load JSON file
-        self.load_button = ctk.CTkButton(self, text="Load JSON File", command=self.load_json_file, state="disabled")
-        # self.load_button.pack(pady=20)
+        if self.json_path:
+            self.load_button = ctk.CTkButton(self, text="Load JSON File", command=self.load_json_file, state="normal")
+        else:
+            self.load_button = ctk.CTkButton(self, text="Load JSON File", command=self.load_json_file, state="disabled")
+
         self.load_button.grid(row=0, column=3, padx=(5, 10), pady=10, sticky="ew")
 
-        # Text box to display JSON content
-        # self.json_textbox = ctk.CTkTextbox(self, width=600, height=400)
-        # self.json_textbox.pack(pady=20)
-
         self.file_entry = ctk.CTkEntry(self, width=400)
+        self.file_entry.delete(0, "end")
+        self.file_entry.insert(0, self.json_path)
         # self.file_entry.pack(pady=20)
         self.file_entry.grid(row=0, column=1, columnspan=2, padx=5, pady=10, sticky="ew")
 
@@ -56,6 +55,6 @@ class JsonLoaderFrame(ctk.CTkFrame):
     def load_json_file(self):
         if self.json_path:
             try:
-                self.scenario.load_scenario(self.json_path, total_path=True)
+                self.scenario.load_scenario2(self.json_path, total_path=True)
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to load JSON file: {e}")
