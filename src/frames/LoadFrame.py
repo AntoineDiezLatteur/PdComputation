@@ -55,6 +55,6 @@ class JsonLoaderFrame(ctk.CTkFrame):
     def load_json_file(self):
         if self.json_path:
             try:
-                self.scenario.load_scenario2(self.json_path, total_path=True)
+                self.scenario.load_scenario(self.json_path, total_path=True)
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to load JSON file: {e}")

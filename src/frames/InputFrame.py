@@ -27,14 +27,14 @@ class InputFrame(ctk.CTkScrollableFrame):
         self.grid_columnconfigure(1, weight=2)
 
         i=2
-        for name in self.scenario.scenario_parameter_list:
+        for key in self.scenario.scenario:
 
-            label = ctk.CTkLabel(self, text=f"{name}")
+            label = ctk.CTkLabel(self, text=f"{key}")
             label.grid(row=i, column=0, pady=5, sticky="w", padx=5)
 
             entry = ctk.CTkEntry(self, placeholder_text='Enter a value')
             entry.grid(row=i, column=1, pady=5, sticky="w", padx=5)
-            self.variables[name] = entry
+            self.variables[key] = entry
 
             i+=1
 
