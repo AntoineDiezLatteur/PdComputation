@@ -85,7 +85,7 @@ class Computation:
             global_pd += term
         return global_pd
 
-    def pd_analysis(self):
+    def pd_analysis(self, mutli_scan=False):
         x = np.linspace(10, 100000, 100)
         y = []
         z = []
@@ -124,6 +124,13 @@ class Computation:
             global_pd = self.global_pd_computation(nb, kb, burst_pd)
             global_pd_wo_clutter = self.global_pd_computation(nb, kb, burst_pd_wo_clutter)
             global_pd_side_lobe = self.global_pd_computation(nb, kb, burst_pd_side_lobe)
+
+            if mutli_scan:
+                n = 4
+                k = 3
+                global_pd = self.global_pd_computation(n, k, global_pd)
+                global_pd_wo_clutter = self.global_pd_computation(n, k, global_pd_wo_clutter)
+                global_pd_side_lobe = self.global_pd_computation(n, k, global_pd_side_lobe)
 
             y.append(global_pd)
             z.append(global_pd_wo_clutter)

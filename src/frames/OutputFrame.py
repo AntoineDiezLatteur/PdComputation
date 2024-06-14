@@ -43,7 +43,7 @@ class OutputFrame(ctk.CTkFrame):
         self.option_menu = ctk.CTkOptionMenu(
             self,
             variable=self.selected_option,
-            values=["Pd computation", "Snr computation"],
+            values=["Single scan Pd", "Multi-scan Pd","Snr computation"],
             command=self.on_option_selected
         )
         self.option_menu.grid(row=2, column=0, pady=10)
@@ -59,8 +59,17 @@ class OutputFrame(ctk.CTkFrame):
         self.figure.clear()
         ax = self.figure.add_subplot(111)
 
-        if self.selected_option.get() == "Pd computation":
+        if self.selected_option.get() == "Single scan Pd":
             x, y, z, w = Computation(self.scenario).pd_analysis()
+            thr = [self.scenario.config_parameters['desired_pd'] for _ in range(len(x))]
+            ax.plot(x, y)
+            ax.plot(x, z)
+            ax.plot(x, w)
+            ax.plot(x, thr, c='r', linestyle='--')
+            ax.legend(['Pd w/ clutter', 'Pd w/o clutter', 'Pd w/ clutter in sidelobe', 'Desired Pd'])
+
+        elif self.selected_option.get() == "Multi-scan Pd":
+            x, y, z, w = Computation(self.scenario).pd_analysis(mutli_scan=True)
             thr = [self.scenario.config_parameters['desired_pd'] for _ in range(len(x))]
             ax.plot(x, y)
             ax.plot(x, z)

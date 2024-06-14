@@ -12,37 +12,7 @@ from scipy.integrate import quad
 class Swerling:
 
     def __init__(self):
-        # self.__scenario = scn.Scenario()
-        # self.__model = scn.swelring_model
-        # self.__pfa = self.scenario.pfa
-        # self.__snr = 15
-        # self.pd = self.scenario.desired_pd
-        # self.__scenario = scn.Scenario()
-        pass
-
-    # @property
-    # def model(self):
-    #     return self.__model
-    #
-    # @property
-    # def pfa(self):
-    #     return self.__pfa
-    #
-    # @property
-    # def snr(self):
-    #     return self.__snr
-    #
-    # @property
-    # def pd(self):
-    #     return self.__pd
-    #
-    # @property
-    # def scenario(self):
-    #     return self.__scenario
-    #
-    # @scenario.setter
-    # def scenario(self, new_scenario):
-    #     self.__scenario = new_scenario
+          pass
 
     def sweling_I_II(self, pfa, snr):
         return pfa ** (1 / (1 + snr))
