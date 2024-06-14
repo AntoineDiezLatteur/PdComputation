@@ -24,14 +24,12 @@ class App(ctk.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-
         self.input_frame = InputFrame(master=self, scenario=self.scenario)
         self.output_frame = OutputFrame(master=self,scenario=self.scenario)
         self.load_frame = JsonLoaderFrame(master=self, scenario=self.scenario)
         self.scenario.subscribe(self.input_frame.update)
 
         print('HMI initialized')
-        # self.mainloop()
 
     def main(self):
         self.mainloop()

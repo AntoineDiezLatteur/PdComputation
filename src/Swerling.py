@@ -66,30 +66,3 @@ class Swerling:
         lower_limit = -np.log(pfa)
         result, error = quad(outer_integrand, lower_limit, np.inf, args=(snr,))
         return result
-
-    # def main(self):
-    #     if self.model in [1, 2]:
-    #         self.pd = self.sweling_I_II()
-    #         return self.pd
-    #     elif self.model in [3, 4]:
-    #         self.pd = self.sweling_III_IV()
-    #         return self.pd
-    #     elif self.model == 5:
-    #         self.pd = self.sweling_V(self.pfa, self.snr)
-    #         return self.pd
-    #     else:
-    #         return "Model not implemented"
-
-# if __name__ == '__main__':
-#     snr = 15
-#     pfa = 1e-6
-#     swerling = Swerling()
-#     print(swerling.sweling_I_II(pfa, snr))
-#     print(swerling.sweling_III_IV(pfa, snr))
-#     print(swerling.sweling_V(pfa, snr))
-
-
-
-
-
-

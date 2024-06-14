@@ -9,8 +9,6 @@ import json
 from src.loader import DATA_PATH
 from src.loader import CONFIG_PATH
 import os
-from dataclasses import dataclass
-from typing import Optional
 import rx
 from rx.subject import Subject
 
@@ -18,7 +16,8 @@ class Scenario:
 
     def __init__(self):
         self._subject = Subject()
-        self._scenario = {
+
+        self.__scenario_parameters = {
             'swelring_model': None,
             'target_rcs': None,
             'Nb': None,
@@ -26,9 +25,11 @@ class Scenario:
             'azimuth_angle': None,
             'radar_height': None,
             'clutter_reflectivity': None,
+            'side_lobe_loss': None,
+            'pfa': None,
         }
 
-        self._config_parameters = {
+        self.__config_parameters = {
             'celerity': 3e8,
             'frequency': None,
             'wavelength': None,
@@ -41,47 +42,38 @@ class Scenario:
             'system_temperature': None,
             'noise_bandwight': None,
             'noise': None,
-            'pfa': None,
             'desired_pd': None,
             'tau': None,
         }
 
     @property
     def config_parameters(self):
-        return self._config_parameters
+        return self.__config_parameters
 
     @config_parameters.setter
     def config_parameters(self, new_config_parameters):
-        self._config_parameters = new_config_parameters
+        self.__config_parameters = new_config_parameters
 
     @property
-    def scenario(self):
-        return self._scenario
+    def scenario_parameters(self):
+        return self.__scenario_parameters
 
-    @scenario.setter
-    def scenario(self, new_scenario):
-        self._scenario = new_scenario
+    @scenario_parameters.setter
+    def scenario_parameters(self, new_scenario):
+        self.__scenario_parameters = new_scenario
         self._subject.on_next(new_scenario)
-
 
     def subscribe(self, observer):
         return self._subject.subscribe(observer)
 
-
     def __str__(self):
-        return f'Scenario: {self._scenario}'
-
-    def main(self):
-        pass
+        return f'Scenario: {self.scenario_parameters}\nConfig: {self.config_parameters}'
 
     def load_scenario(self, scenario_file='scenario.json', total_path=False):
-        print('Loading scenario')
         data_path = f'{DATA_PATH}/{scenario_file}' if not total_path else scenario_file
         with open(data_path, 'r') as file:
             scenario = json.load(file)
-        self.scenario = scenario
-        print(self)
-        print('Scenario loaded')
+        self.scenario_parameters = scenario
 
     def config(self, config_file='config.json'):
         config_path = f'{CONFIG_PATH}/{config_file}'
@@ -96,15 +88,3 @@ class Scenario:
         nb = self.config_parameters['noise_bandwight']
         cb = self.config_parameters['boltzmann_ct']
         self.config_parameters['noise'] = cb * t * nb
-        print(self.config_parameters)
-        print('Config loaded')
-
-    # # def generate_scenario(self):
-    # def scenario_generator(self, file_name='scenario.json', scenario=None):
-    #
-    #     if scenario != None:
-    #         self.default_scenario = scenario
-    #
-    #     # Write the scenario to a JSON file
-    #     with open(os.path.join(DATA_PATH, file_name), 'w') as file:
-    #         json.dump(self.default_scenario, file, indent=4)

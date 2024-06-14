@@ -11,10 +11,18 @@ class InputFrame(ctk.CTkScrollableFrame):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.grid(row=0, column=0, padx=10, pady=10, sticky="nswe")
-        self.scenario = scenario
+        self.__scenario = scenario
 
-        self.variables = {}
+        self.entries = {}
         self.create_widgets()
+
+    @property
+    def scenario(self):
+        return self.__scenario
+
+    @scenario.setter
+    def scenario(self, value):
+        self.__scenario = value
 
     def create_widgets(self):
         self.config_button = ctk.CTkButton(self, text="Configure Scenario", command=self.configure_scenario)
@@ -27,35 +35,31 @@ class InputFrame(ctk.CTkScrollableFrame):
         self.grid_columnconfigure(1, weight=2)
 
         i=2
-        for key in self.scenario.scenario:
+        for key in self.scenario.scenario_parameters:
 
             label = ctk.CTkLabel(self, text=f"{key}")
             label.grid(row=i, column=0, pady=5, sticky="w", padx=5)
 
             entry = ctk.CTkEntry(self, placeholder_text='Enter a value')
             entry.grid(row=i, column=1, pady=5, sticky="w", padx=5)
-            self.variables[key] = entry
-
+            self.entries[key] = entry
             i+=1
 
         self.submit_button = ctk.CTkButton(self, text="Submit", command=self.submit_values)
         self.submit_button.grid(row=i, column=0, columnspan=2, pady=10, padx=20, sticky="ew")
 
-
     def configure_scenario(self):
-        print(self.scenario)
         self.scenario.config()
-        print(self.scenario)
+        print("Scenario configured")
 
     def update(self, new_scenario):
-        print('Updating input frame')
-        for key, value in self.scenario.scenario.items():
-            if key in self.variables:
-                self.variables[key].delete(0, 'end')
-                self.variables[key].insert(0, value)
-
+        for key, value in self.scenario.scenario_parameters.items():
+            if key in self.entries:
+                self.entries[key].delete(0, 'end')
+                self.entries[key].insert(0, value)
 
     def submit_values(self):
-        scenario = {key: float(entry.get()) for key, entry in self.variables.items()}
-        self.scenario.scenario = scenario
+        scenario = {key: float(entry.get()) for key, entry in self.entries.items()}
+        self.scenario.scenario_parameters = scenario
+        print("Values submitted")
 

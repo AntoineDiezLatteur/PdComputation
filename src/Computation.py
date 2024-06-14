@@ -26,8 +26,8 @@ class Computation:
 
     def ds_computation(self, range):
         c = self.scenario.config_parameters['celerity']
-        h = self.scenario.scenario['radar_height']
-        theta_az = self.scenario.scenario['azimuth_angle']
+        h = self.scenario.scenario_parameters['radar_height']
+        theta_az = self.scenario.scenario_parameters['azimuth_angle']
         tau = self.scenario.config_parameters['tau']
         if h/range > 1 or h/range < -1:
             return 0
@@ -40,13 +40,13 @@ class Computation:
 
     def swerling_computation(self, pfa, snr):
         swerling_instance = swr.Swerling()
-        if self.scenario.scenario['swelring_model'] in [1, 2]:
+        if self.scenario.scenario_parameters['swelring_model'] in [1, 2]:
             burst_pd = swerling_instance.sweling_I_II(pfa, snr)
             return burst_pd
-        elif self.scenario.scenario['swelring_model'] in [3, 4]:
+        elif self.scenario.scenario_parameters['swelring_model'] in [3, 4]:
             burst_pd = swerling_instance.sweling_III_IV(pfa, snr)
             return burst_pd
-        elif self.scenario.scenario['swelring_model'] == 5:
+        elif self.scenario.scenario_parameters['swelring_model'] == 5:
             burst_pd = swerling_instance.sweling_V(pfa, snr)
             return burst_pd
         else:
@@ -85,31 +85,6 @@ class Computation:
             global_pd += term
         return global_pd
 
-    def run(self):
-        target_rcs = self.scenario.target_rcs
-        target_range = self.scenario.target_range
-        target_doppler_gain = self.scenario.doppler_gain_target
-        s_target = self.S_computation(target_rcs, target_range, target_doppler_gain)
-
-        clutter_range = self.scenario.clutter_range
-        clutter_rcs = self.scenario.clutter_rcs
-        ds = self.ds_computation(clutter_range)
-        reflectivity = self.scenario.clutter_reflectivity
-        clutter_rcs = reflectivity * ds
-        clutter_doppler_gain = self.scenario.doppler_gain_clutter
-        s_clutter = self.S_computation(clutter_rcs, clutter_range, clutter_doppler_gain)
-
-        snrc = self.snrc_computation(s_clutter, s_target)
-        snrc_sidelobe = self.snrc_computation(s_clutter - 30, s_target)
-        pfa = self.scenario.pfa
-
-        burst_pd = self.swerling_computation(pfa, snrc)
-        nb = self.scenario.Nb
-        kb = self.scenario.Kb
-
-        global_pd = self.global_pd_computation(nb, kb, burst_pd)
-        return global_pd
-
     def pd_analysis(self):
         x = np.linspace(10, 100000, 100)
         y = []
@@ -120,21 +95,22 @@ class Computation:
 
             target_range = i
 
-            target_rcs = self.scenario.scenario['target_rcs']
+            target_rcs = self.scenario.scenario_parameters['target_rcs']
             target_doppler_gain = self.scenario.config_parameters['doppler_gain_target']
 
             clutter_range = i
             ds = self.ds_computation(clutter_range)
-            reflectivity = self.scenario.scenario['clutter_reflectivity']
+            reflectivity = self.scenario.scenario_parameters['clutter_reflectivity']
             clutter_rcs = reflectivity * ds
 
             clutter_doppler_gain = self.scenario.config_parameters['doppler_gain_clutter']
             s_clutter = self.S_computation(clutter_rcs, clutter_range, clutter_doppler_gain)
-            s_clutter_side_lobe = s_clutter - 30
+            side_lobe_loss = self.scenario.scenario_parameters['side_lobe_loss']
+            s_clutter_side_lobe = s_clutter - side_lobe_loss
 
-            pfa = self.scenario.config_parameters['pfa']
-            nb = self.scenario.scenario['Nb']
-            kb = self.scenario.scenario['Kb']
+            pfa = self.scenario.scenario_parameters['pfa']
+            nb = self.scenario.scenario_parameters['Nb']
+            kb = self.scenario.scenario_parameters['Kb']
 
             s_target = self.S_computation(target_rcs, target_range, target_doppler_gain)
             snrc = self.snrc_computation(s_clutter, s_target)
@@ -164,21 +140,22 @@ class Computation:
         for i in x:
 
             target_range = i
-            target_rcs = self.scenario.scenario['target_rcs']
+            target_rcs = self.scenario.scenario_parameters['target_rcs']
             target_doppler_gain = self.scenario.config_parameters['doppler_gain_target']
 
             clutter_range = i
             ds = self.ds_computation(clutter_range)
-            reflectivity = self.scenario.scenario['clutter_reflectivity']
+            reflectivity = self.scenario.scenario_parameters['clutter_reflectivity']
             clutter_rcs = reflectivity * ds
 
             clutter_doppler_gain = self.scenario.config_parameters['doppler_gain_clutter']
             s_clutter = self.S_computation(clutter_rcs, clutter_range, clutter_doppler_gain)
-            s_clutter_side_lobe = s_clutter - 30
+            side_lobe_loss = self.scenario.scenario_parameters['side_lobe_loss']
+            s_clutter_side_lobe = s_clutter - side_lobe_loss
 
-            pfa = self.scenario.config_parameters['pfa']
-            nb = self.scenario.scenario['Nb']
-            kb = self.scenario.scenario['Kb']
+            pfa = self.scenario.scenario_parameters['pfa']
+            nb = self.scenario.scenario_parameters['Nb']
+            kb = self.scenario.scenario_parameters['Kb']
 
             s_target = self.S_computation(target_rcs, target_range, target_doppler_gain)
 
@@ -193,7 +170,6 @@ class Computation:
 
 if __name__ == '__main__':
     scenario = scn.Scenario()
-    # scenario.scenario_generator(file_name='scenario.json')
     scenario.load_scenario(scenario_file='config.json')
     computation = Computation(scenario)
 
