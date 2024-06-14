@@ -2,7 +2,7 @@
 File: Scenario
 Author: antoi
 Date: 03/06/2024
-Description: 
+Description: Hold the scenario and config parameters
 """
 
 import json
@@ -75,7 +75,7 @@ class Scenario:
             scenario = json.load(file)
         self.scenario_parameters = scenario
 
-    def config(self, config_file='config.json'):
+    def config(self, config_file='default_config.json'):
         config_path = f'{CONFIG_PATH}/{config_file}'
         with open(config_path, 'r') as file:
             scenario = json.load(file)

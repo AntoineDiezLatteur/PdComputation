@@ -2,8 +2,9 @@
 File: InputFrame
 Author: antoi
 Date: 06/06/2024
-Description: 
+Description: Hold the input frame for the HMI
 """
+
 import customtkinter as ctk
 
 class InputFrame(ctk.CTkScrollableFrame):
@@ -55,8 +56,13 @@ class InputFrame(ctk.CTkScrollableFrame):
     def update(self, new_scenario):
         for key, value in self.scenario.scenario_parameters.items():
             if key in self.entries:
-                self.entries[key].delete(0, 'end')
-                self.entries[key].insert(0, value)
+                if key == 'swelring_model' or key == 'Nb' or key == 'Kb':
+                    self.entries[key].delete(0, 'end')
+                    self.entries[key].insert(0, int(value))
+                else:
+                    self.entries[key].delete(0, 'end')
+                    self.entries[key].insert(0, float(value))
+
 
     def submit_values(self):
         scenario = {key: float(entry.get()) for key, entry in self.entries.items()}

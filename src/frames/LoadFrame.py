@@ -2,7 +2,7 @@
 File: LoadFrame
 Author: antoi
 Date: 07/06/2024
-Description: 
+Description: Hold the load frame for the HMI. Load a JSON file and update the scenario
 """
 
 import customtkinter as ctk

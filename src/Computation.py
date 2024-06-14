@@ -2,7 +2,7 @@
 File: Computation
 Author: antoi
 Date: 03/06/2024
-Description: 
+Description: Manage the computations
 """
 
 import numpy as np
@@ -167,33 +167,3 @@ class Computation:
             z.append(10 * np.log10(snrc_side_lobe))
             w.append(10 * np.log10(snr))
         return x, y, z, w
-
-if __name__ == '__main__':
-    scenario = scn.Scenario()
-    scenario.load_scenario(scenario_file='config.json')
-    computation = Computation(scenario)
-
-    target_rcs = computation.scenario.target_rcs
-    target_range = computation.scenario.target_range
-    target_doppler_gain = computation.scenario.doppler_gain_target
-    s_target = computation.S_computation(target_rcs, target_range, target_doppler_gain)
-
-
-    clutter_rcs = computation.scenario.clutter_rcs
-    clutter_range = computation.scenario.clutter_range
-    clutter_doppler_gain = computation.scenario.doppler_gain_clutter
-    s_clutter = computation.S_computation(clutter_rcs, clutter_range, clutter_doppler_gain)
-
-    snrc = computation.snrc_computation(s_clutter, s_target)
-    pfa = computation.scenario.pfa
-    noise = computation.scenario.noise
-
-
-    burst_pd = computation.swerling_computation(pfa, snrc)
-    nb = computation.scenario.Nb
-    kb = computation.scenario.Kb
-
-
-    global_pd = computation.global_pd_computation(nb, kb, burst_pd)
-
-

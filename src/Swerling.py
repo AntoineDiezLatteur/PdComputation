@@ -2,13 +2,12 @@
 File: Swerling
 Author: antoi
 Date: 03/06/2024
-Description: 
+Description: Manage Swerling model computations
 """
 
 import numpy as np
 import scipy as sp
 from scipy.integrate import quad
-
 
 class Swerling:
 

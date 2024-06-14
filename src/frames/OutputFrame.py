@@ -2,7 +2,7 @@
 File: OutputFrame
 Author: antoi
 Date: 06/06/2024
-Description: 
+Description: Hold the output frame and display the results
 """
 
 import customtkinter as ctk
@@ -65,7 +65,7 @@ class OutputFrame(ctk.CTkFrame):
             ax.plot(x, y)
             ax.plot(x, z)
             ax.plot(x, w)
-            ax.plot(x, thr)
+            ax.plot(x, thr, c='r', linestyle='--')
             ax.legend(['Pd w/ clutter', 'Pd w/o clutter', 'Pd w/ clutter in sidelobe', 'Desired Pd'])
 
         elif self.selected_option.get() == "Snr computation":

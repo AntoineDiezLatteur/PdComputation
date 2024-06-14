@@ -1,0 +1,16 @@
+{
+    "celerity": 3e8,
+    "frequency": 3e9,
+    "wavelength": null,
+    "power": 15e3,
+    "antenna_gain": 64,
+    "doppler_gain_target": 10,
+    "doppler_gain_clutter": -40,
+    "loss": 10,
+    "boltzmann_ct": 1.38e-23,
+    "system_temperature": 1064,
+    "noise_bandwight": 20e3,
+    "noise": null,
+    "desired_pd": 0.9,
+    "tau": 5e-5
+}

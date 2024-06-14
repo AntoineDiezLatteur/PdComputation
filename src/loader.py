@@ -2,7 +2,7 @@
 File: loader
 Author: antoi
 Date: 06/06/2024
-Description: 
+Description: Hold the paths to the data and config folders
 """
 
 import os
