@@ -26,7 +26,7 @@ class InputFrame(ctk.CTkScrollableFrame):
         self.__scenario = value
 
     def create_widgets(self):
-        self.config_button = ctk.CTkButton(self, text="Configure Scenario", command=self.configure_scenario)
+        self.config_button = ctk.CTkButton(self, text="Load Configuration", command=self.configure_scenario)
         self.config_button.grid(row=0, column=0, pady=10, padx=20, columnspan=2, sticky="ew")
 
         self.label = ctk.CTkLabel(self, text="Enter Numerical Values")

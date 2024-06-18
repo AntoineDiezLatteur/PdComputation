@@ -38,9 +38,9 @@ class JsonLoaderFrame(ctk.CTkFrame):
         self.open_button.grid(row=0, column=0, padx=(10, 5), pady=10, sticky="ew")
 
         if self.json_path:
-            self.load_button = ctk.CTkButton(self, text="Load JSON File", command=self.load_json_file, state="normal")
+            self.load_button = ctk.CTkButton(self, text="Load JSON scenario", command=self.load_json_file, state="normal")
         else:
-            self.load_button = ctk.CTkButton(self, text="Load JSON File", command=self.load_json_file, state="disabled")
+            self.load_button = ctk.CTkButton(self, text="Load JSON scenario", command=self.load_json_file, state="disabled")
 
         self.load_button.grid(row=0, column=3, padx=(5, 10), pady=10, sticky="ew")
 
