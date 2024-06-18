@@ -12,7 +12,7 @@ from src.frames.OutputFrame import OutputFrame
 from src.frames.LoadFrame import JsonLoaderFrame
 
 class App(ctk.CTk):
-    def __init__(self):
+    def __init__(self, config_file='default_config.json'):
         super().__init__()
 
         self.title("Custom Tkinter HMI")
@@ -24,7 +24,7 @@ class App(ctk.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.input_frame = InputFrame(master=self, scenario=self.scenario)
+        self.input_frame = InputFrame(master=self, scenario=self.scenario, config_file=config_file)
         self.output_frame = OutputFrame(master=self,scenario=self.scenario)
         self.load_frame = JsonLoaderFrame(master=self, scenario=self.scenario)
         self.scenario.subscribe(self.input_frame.update)
@@ -35,5 +35,5 @@ class App(ctk.CTk):
         self.mainloop()
 
 if __name__ == "__main__":
-    app = App()
+    app = App(config_file='default_config.json')
     app.main()

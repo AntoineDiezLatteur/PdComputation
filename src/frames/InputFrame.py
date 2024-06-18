@@ -8,13 +8,13 @@ Description: Hold the input frame for the HMI
 import customtkinter as ctk
 
 class InputFrame(ctk.CTkScrollableFrame):
-    def __init__(self, master, scenario, *args, **kwargs):
+    def __init__(self, master, scenario, config_file, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.grid(row=0, column=0, padx=10, pady=10, sticky="nswe")
         self.__scenario = scenario
-
         self.entries = {}
+        self._config_file = config_file
         self.create_widgets()
 
     @property
@@ -50,7 +50,7 @@ class InputFrame(ctk.CTkScrollableFrame):
         self.submit_button.grid(row=i, column=0, columnspan=2, pady=10, padx=20, sticky="ew")
 
     def configure_scenario(self):
-        self.scenario.config()
+        self.scenario.config(self._config_file)
         print("Scenario configured")
 
     def update(self, new_scenario):
