@@ -19,7 +19,6 @@ class App(ctk.CTk):
         self.geometry("800x600")
         self.scenario = scn.Scenario()
 
-        # Configure the grid layout for the main window
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)

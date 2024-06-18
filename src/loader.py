@@ -12,7 +12,6 @@ class Loader:
         self.data_path = os.path.dirname(os.path.abspath(__file__)) + '/../data'
         self.config_paht = os.path.dirname(os.path.abspath(__file__)) + '/../config'
 
-
 loader = Loader()
 DATA_PATH = loader.data_path
 CONFIG_PATH = loader.config_paht
