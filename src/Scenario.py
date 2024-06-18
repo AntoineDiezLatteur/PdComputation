@@ -20,6 +20,7 @@ class Scenario:
         self.__scenario_parameters = {
             'swelring_model': None,
             'target_rcs': None,
+            'target_height': None,
             'Nb': None,
             'Kb': None,
             'azimuth_angle': None,
@@ -39,6 +40,7 @@ class Scenario:
             'doppler_gain_clutter': None,
             'loss': None,
             'boltzmann_ct': 1.38e-23,
+            'earth_radius': 6371e3,
             'system_temperature': None,
             'noise_bandwight': None,
             'noise': None,

@@ -8,6 +8,7 @@
     "doppler_gain_clutter": -40,
     "loss": 10,
     "boltzmann_ct": 1.38e-23,
+    "earth_radius": 6371e3,
     "system_temperature": 1064,
     "noise_bandwight": 20e3,
     "noise": null,

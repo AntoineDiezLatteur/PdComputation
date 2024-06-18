@@ -6,10 +6,9 @@ Description: Hold the output frame and display the results
 """
 
 import customtkinter as ctk
-import numpy as np
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from src.Computation import Computation
+from src.computation.Computation import Computation
 
 class OutputFrame(ctk.CTkFrame):
     def __init__(self, master, scenario, *args, **kwargs):
@@ -38,12 +37,12 @@ class OutputFrame(ctk.CTkFrame):
         self.range_computation_button = ctk.CTkButton(self, text="Run computation", command=self.run_program)
         self.range_computation_button.grid(row=1, column=0, pady=10)
 
-        self.selected_option = ctk.StringVar(value="Pd computation")
+        self.selected_option = ctk.StringVar(value="Single scan Pd")
 
         self.option_menu = ctk.CTkOptionMenu(
             self,
             variable=self.selected_option,
-            values=["Single scan Pd", "Multi-scan Pd","Snr computation"],
+            values=["Single scan Pd", "Multi-scan Pd", "Snr computation"],
             command=self.on_option_selected
         )
         self.option_menu.grid(row=2, column=0, pady=10)
@@ -60,7 +59,8 @@ class OutputFrame(ctk.CTkFrame):
         ax = self.figure.add_subplot(111)
 
         if self.selected_option.get() == "Single scan Pd":
-            x, y, z, w = Computation(self.scenario).pd_analysis()
+            print('single scan')
+            x, y, z, w = Computation(self.scenario).computation_loop()
             thr = [self.scenario.config_parameters['desired_pd'] for _ in range(len(x))]
             ax.plot(x, y)
             ax.plot(x, z)
@@ -69,7 +69,7 @@ class OutputFrame(ctk.CTkFrame):
             ax.legend(['Pd w/ clutter', 'Pd w/o clutter', 'Pd w/ clutter in sidelobe', 'Desired Pd'])
 
         elif self.selected_option.get() == "Multi-scan Pd":
-            x, y, z, w = Computation(self.scenario).pd_analysis(mutli_scan=True)
+            x, y, z, w = Computation(self.scenario).computation_loop(mutli_scan_mode=True)
             thr = [self.scenario.config_parameters['desired_pd'] for _ in range(len(x))]
             ax.plot(x, y)
             ax.plot(x, z)
@@ -78,10 +78,10 @@ class OutputFrame(ctk.CTkFrame):
             ax.legend(['Pd w/ clutter', 'Pd w/o clutter', 'Pd w/ clutter in sidelobe', 'Desired Pd'])
 
         elif self.selected_option.get() == "Snr computation":
-            x, y, z, w = Computation(self.scenario).snr_analysis()
+            x, y, z, w = Computation(self.scenario).computation_loop(snr_mode=True)
             ax.plot(x, y)
             ax.plot(x, z)
             ax.plot(x, w)
             ax.legend(['Snr w/ clutter', 'Snr w/o clutter', 'Snr w/ clutter in sidelobe', 'Desired Pd'])
         self.canvas.draw()
-        print("Computation done")
+        print("computation done")

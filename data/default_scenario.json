@@ -1,6 +1,7 @@
 {
     "target_rcs": 2.0,
     "swelring_model": 1,
+    "target_height": 100.0,
     "Nb": 4,
     "Kb": 2,
     "azimuth_angle": 3.0,

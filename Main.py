@@ -7,7 +7,7 @@ Description:
 
 import argparse
 from src.Scenario import Scenario
-from src.Computation import Computation
+from src.computation import Computation
 from src.App import App
 
 
