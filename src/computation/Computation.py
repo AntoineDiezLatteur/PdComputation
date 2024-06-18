@@ -2,14 +2,15 @@
 File: computation
 Author: antoi
 Date: 03/06/2024
-Description: Manage the computations
+Description: Manage global computations using the computation's libraries
 """
 
 import numpy as np
 import src.computation.Geometry as geo
 import src.computation.Pd as pd
 import src.computation.Power as pw
-
+import src.computation.Swerling as swr
+import src.Scenario
 
 class Computation:
 
@@ -67,8 +68,9 @@ class Computation:
             burst_pd = self._swerling.sweling_III_IV(pfa, snr)
             return burst_pd
         elif self.scenario.scenario_parameters['swelring_model'] == 5:
-            burst_pd = self._swerling.sweling_V(pfa, snr)
-            return burst_pd
+            # burst_pd = self._swerling.sweling_V(pfa, snr)
+            # return burst_pd
+            return "Model not working for now"
         else:
             return "Model not implemented"
 
@@ -140,6 +142,7 @@ class Computation:
                 global_pd_side_lobe = self.global_pd_computation(n, k, global_pd_side_lobe)
 
             theta = self.theta_computation(target_range)
+
             if not snr_mode :
                 if not self.is_visible(target_range, theta):
                     global_pd = 0

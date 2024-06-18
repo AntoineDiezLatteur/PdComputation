@@ -2,7 +2,7 @@
 File: Pd
 Author: antoi
 Date: 18/06/2024
-Description: 
+Description: Handle probability of detection computations
 """
 
 from scipy.special import comb

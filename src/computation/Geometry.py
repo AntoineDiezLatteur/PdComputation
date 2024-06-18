@@ -2,7 +2,7 @@
 File: Geometry
 Author: antoi
 Date: 18/06/2024
-Description: 
+Description: Handle the geometrical computations
 """
 
 import numpy as np

@@ -2,7 +2,7 @@
 File: power
 Author: antoi
 Date: 18/06/2024
-Description: 
+Description: Handle energetic computations
 """
 
 import numpy as np
