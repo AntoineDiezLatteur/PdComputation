@@ -14,6 +14,8 @@ python main.py -r
 ```
 python main.py -r -c config.json
 ```
+### 3 - Launch the editor from a script
+Run the script App.py
 ## HMI presentation
 ![image](https://github.com/Azo1hz/PdComputation/assets/147478644/25c03af1-0e5b-4b44-a846-90ad99e4287e)
 ### 1 - Load Configuration button
