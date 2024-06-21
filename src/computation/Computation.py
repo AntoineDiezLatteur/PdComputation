@@ -159,7 +159,7 @@ class Computation:
                     w.append(0)
                 else:
                     y.append(10 * np.log10(snrc))
-                    z.append(10 * np.log10(snrc_side_lobe))
-                    w.append(10 * np.log10(snr))
+                    z.append(10 * np.log10(snr))
+                    w.append(10 * np.log10(snrc_side_lobe))
 
         return x, y, z, w
