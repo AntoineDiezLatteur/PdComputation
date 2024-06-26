@@ -9,6 +9,7 @@ import numpy as np
 import src.computation.Reflection as rfl
 from src.loader import TERRAIN_PATH
 import json
+import matplotlib.pyplot as plt
 
 class Terrain:
 
@@ -70,6 +71,14 @@ class Terrain:
             self.height[start_idx:end_idx] = obj['height']
             self.reflectivity[start_idx:end_idx] = reflectivity
 
+        def smoothing(data, window_size=50):
+            means = [np.mean(data[max(i - window_size // 2, 0):min(i + window_size // 2 + 1, len(data))]) for i in
+                     range(len(data))]
+            return means
+
+        self.height = smoothing(self.height, window_size=10)
+        self.reflectivity = smoothing(self.reflectivity, window_size=10)
+
     @property
     def height(self):
         return self.__height
@@ -106,3 +115,5 @@ if __name__ == '__main__':
     terrain = Terrain()
     terrain.load_terrain('terrain.json')
     print(terrain)
+    plt.plot(terrain.range, terrain.height)
+    plt.show()

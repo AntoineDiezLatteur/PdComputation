@@ -28,6 +28,7 @@ class Scenario:
             'clutter_reflectivity': None,
             'side_lobe_loss': None,
             'pfa': None,
+            'sea_state': None,
         }
 
         self.__config_parameters = {

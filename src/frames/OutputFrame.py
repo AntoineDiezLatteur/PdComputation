@@ -65,32 +65,43 @@ class OutputFrame(ctk.CTkFrame):
 
     def run_program(self):
         self.figure.clear()
-        ax = self.figure.add_subplot(111)
+        ax1, ax2 = self.figure.subplots(2,1)
+
+        ax1.set_position([0.1, 0.35, 0.8, 0.6])  # [left, bottom, width, height]
+        ax2.set_position([0.1, 0.1, 0.8, 0.2])  # [left, bottom, width, height]
+
+        x2 = self.terrain.range
+        y2 = self.terrain.height
+        z2 = [self.scenario.scenario_parameters['target_height'] for _ in range(len(x2))]
 
         if self.selected_option.get() == "Single scan Pd":
             print('single scan')
             x, y, z, w, j, k, l = Computation(self.scenario, self.terrain).computation_loop()
             thr = [self.scenario.config_parameters['desired_pd'] for _ in range(len(x))]
-            ax.plot(x, y)
-            ax.plot(x, z)
-            ax.plot(x, w)
-            ax.plot(x, thr, c='r', linestyle='--')
-            ax.legend(['Pd w/ clutter', 'Pd w/o clutter', 'Pd w/ clutter in sidelobe', 'Desired Pd'])
+            ax1.plot(x, y)
+            ax1.plot(x, z)
+            ax1.plot(x, w)
+            ax1.plot(x, thr, c='r', linestyle='--')
+            ax1.legend(['Pd w/ clutter', 'Pd w/o clutter', 'Pd w/ clutter in sidelobe', 'Desired Pd'])
 
         elif self.selected_option.get() == "Multi-scan Pd":
             x, y, z, w, j, k, l = Computation(self.scenario).computation_loop(mutli_scan_mode=True)
             thr = [self.scenario.config_parameters['desired_pd'] for _ in range(len(x))]
-            ax.plot(x, y)
-            ax.plot(x, z)
-            ax.plot(x, w)
-            ax.plot(x, thr, c='r', linestyle='--')
-            ax.legend(['Pd w/ clutter', 'Pd w/o clutter', 'Pd w/ clutter in sidelobe', 'Desired Pd'])
+            ax1.plot(x, y)
+            ax1.plot(x, z)
+            ax1.plot(x, w)
+            ax1.plot(x, thr, c='r', linestyle='--')
+            ax1.legend(['Pd w/ clutter', 'Pd w/o clutter', 'Pd w/ clutter in sidelobe', 'Desired Pd'])
 
         elif self.selected_option.get() == "Snr computation":
             x, y, z, w, j, k, l = Computation(self.scenario).computation_loop(snr_mode=True)
-            ax.plot(x, y)
-            ax.plot(x, z)
-            ax.plot(x, w)
-            ax.legend(['Snr w/ clutter', 'Snr w/o clutter', 'Snr w/ clutter in sidelobe', 'Desired Pd'])
+            ax1.plot(x, y)
+            ax1.plot(x, z)
+            ax1.plot(x, w)
+            ax1.legend(['Snr w/ clutter', 'Snr w/o clutter', 'Snr w/ clutter in sidelobe', 'Desired Pd'])
+        ax2.plot(x2, y2, c='g')
+        ax2.plot(x2, z2, c='b', linestyle='--')
+        ax2.scatter(0, self.scenario.scenario_parameters['radar_height'], c='black', marker='o')
+
         self.canvas.draw()
         print("computation done")

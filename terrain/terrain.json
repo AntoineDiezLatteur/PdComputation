@@ -13,7 +13,7 @@
     },
     {
         "type": "hill",
-        "height": 100,
+        "height": 80,
         "start_range": 30000,
         "stop_range": 40000
     },

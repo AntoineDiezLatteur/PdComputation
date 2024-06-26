@@ -12,18 +12,13 @@ class Geometry:
     def __init__(self):
         pass
 
-    def ds_computation(self, range, c, h, elevation_angle, grazing_angle, tau):
+    def ds_computation(self, range, c, h, beam_3db_angle, grazing_angle, tau):
         if h/range > 1 or h/range < -1:
             return 0
         else:
-            a1 = 0.5 * range * np.tan(np.deg2rad(elevation_angle/2))
+            a1 = 0.5 * range * np.tan(np.deg2rad(beam_3db_angle/2))
             a2 = (c * tau) / (np.cos(np.arcsin(grazing_angle)))
             a3 = np.sqrt(np.pi / (2* np.log(2)))
-            print(f'a1 * a2 * a3 = {a1 * a2 * a3}')
-            print(f'a1 = {a1}')
-            print(f'range = {range}')
-            print(f'ele = {elevation_angle}')
-
         return a1 * a2 * a3
 
     def r_horizon(self, z, h, er):
@@ -54,5 +49,7 @@ class Geometry:
         lower = 2 * range * (er + z)
         return np.arcsin(upper / lower)
 
-
-
+    def is_both_in_beam(self, range, h, er, z_target, z_clutter, beam_3db_angle):
+        target_elevation_angle = self.elevation_angle_computation(range, h, er, z_target)
+        clutter_elevation_angle = self.elevation_angle_computation(range, h, er, z_clutter)
+        return np.abs(target_elevation_angle - clutter_elevation_angle) <= beam_3db_angle

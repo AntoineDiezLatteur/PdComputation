@@ -8,5 +8,6 @@
     "radar_height": 20.0,
     "clutter_reflectivity": 1e-2,
     "side_lobe_loss": 30.0,
-    "pfa": 1e-6
+    "pfa": 1e-6,
+    "sea_state": 2
 }
