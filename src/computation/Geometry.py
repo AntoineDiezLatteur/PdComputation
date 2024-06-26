@@ -12,13 +12,18 @@ class Geometry:
     def __init__(self):
         pass
 
-    def ds_computation(self, range, c, h, theta_az, tau):
+    def ds_computation(self, range, c, h, elevation_angle, grazing_angle, tau):
         if h/range > 1 or h/range < -1:
             return 0
         else:
-            a1 = 0.5 * range * np.tan(np.deg2rad(theta_az/2))
-            a2 = (c * tau) / (np.cos(np.arcsin(h / range)))
+            a1 = 0.5 * range * np.tan(np.deg2rad(elevation_angle/2))
+            a2 = (c * tau) / (np.cos(np.arcsin(grazing_angle)))
             a3 = np.sqrt(np.pi / (2* np.log(2)))
+            print(f'a1 * a2 * a3 = {a1 * a2 * a3}')
+            print(f'a1 = {a1}')
+            print(f'range = {range}')
+            print(f'ele = {elevation_angle}')
+
         return a1 * a2 * a3
 
     def r_horizon(self, z, h, er):
@@ -39,7 +44,15 @@ class Geometry:
             else:
                 return False
 
-    def theta_computation(self, range, h, er, z):
-        upper =  (er + z)**2 - (er + h)**2 - range**2
+    def elevation_angle_computation(self, range, h, er, z):
+        upper = (er + z)**2 - (er + h)**2 - range**2
         lower = 2 * range * (er + h)
         return np.arcsin(upper / lower)
+
+    def grazing_angle_computation(self, range, h, er, z):
+        upper = (er + h)**2 - (er + z)**2 - range**2
+        lower = 2 * range * (er + z)
+        return np.arcsin(upper / lower)
+
+
+

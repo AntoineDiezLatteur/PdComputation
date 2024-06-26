@@ -11,11 +11,12 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from src.computation.Computation import Computation
 
 class OutputFrame(ctk.CTkFrame):
-    def __init__(self, master, scenario, *args, **kwargs):
+    def __init__(self, master, scenario, terrain, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.master = master
         self.grid(row=0, column=1, padx=(5, 10), pady=(10, 10), sticky="nswe")
         self.__scenario = scenario
+        self.__terrain = terrain
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(4, weight=1)
@@ -29,6 +30,14 @@ class OutputFrame(ctk.CTkFrame):
     @scenario.setter
     def scenario(self, value):
         self.__scenario = value
+
+    @property
+    def terrain(self):
+        return self.__terrain
+
+    @terrain.setter
+    def terrain(self, value):
+        self.__terrain = value
 
     def create_widgets(self):
         self.label = ctk.CTkLabel(self, text="Output and Graphs")
@@ -60,7 +69,7 @@ class OutputFrame(ctk.CTkFrame):
 
         if self.selected_option.get() == "Single scan Pd":
             print('single scan')
-            x, y, z, w = Computation(self.scenario).computation_loop()
+            x, y, z, w, j, k, l = Computation(self.scenario, self.terrain).computation_loop()
             thr = [self.scenario.config_parameters['desired_pd'] for _ in range(len(x))]
             ax.plot(x, y)
             ax.plot(x, z)
@@ -69,7 +78,7 @@ class OutputFrame(ctk.CTkFrame):
             ax.legend(['Pd w/ clutter', 'Pd w/o clutter', 'Pd w/ clutter in sidelobe', 'Desired Pd'])
 
         elif self.selected_option.get() == "Multi-scan Pd":
-            x, y, z, w = Computation(self.scenario).computation_loop(mutli_scan_mode=True)
+            x, y, z, w, j, k, l = Computation(self.scenario).computation_loop(mutli_scan_mode=True)
             thr = [self.scenario.config_parameters['desired_pd'] for _ in range(len(x))]
             ax.plot(x, y)
             ax.plot(x, z)
@@ -78,7 +87,7 @@ class OutputFrame(ctk.CTkFrame):
             ax.legend(['Pd w/ clutter', 'Pd w/o clutter', 'Pd w/ clutter in sidelobe', 'Desired Pd'])
 
         elif self.selected_option.get() == "Snr computation":
-            x, y, z, w = Computation(self.scenario).computation_loop(snr_mode=True)
+            x, y, z, w, j, k, l = Computation(self.scenario).computation_loop(snr_mode=True)
             ax.plot(x, y)
             ax.plot(x, z)
             ax.plot(x, w)

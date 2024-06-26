@@ -48,6 +48,10 @@ class Scenario:
             'tau': None,
         }
 
+        self.step = 100
+        self.range_max = 100000
+        self.range_min = 1000
+
     @property
     def config_parameters(self):
         return self.__config_parameters
@@ -71,7 +75,7 @@ class Scenario:
     def __str__(self):
         return f'Scenario: {self.scenario_parameters}\nConfig: {self.config_parameters}'
 
-    def load_scenario(self, scenario_file='scenario.json', total_path=False):
+    def load_scenario(self, scenario_file='default_scenario.json', total_path=False):
         data_path = f'{DATA_PATH}/{scenario_file}' if not total_path else scenario_file
         with open(data_path, 'r') as file:
             scenario = json.load(file)

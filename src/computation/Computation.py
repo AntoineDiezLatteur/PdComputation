@@ -11,11 +11,14 @@ import src.computation.Pd as pd
 import src.computation.Power as pw
 import src.computation.Swerling as swr
 import src.Scenario
+import matplotlib.pyplot as plt
+from src import Terrain as trn
 
 class Computation:
 
-    def __init__(self, scenario):
+    def __init__(self, scenario, terrain):
         self.__scenario = scenario
+        self.__terrain = terrain
         self._geometry = geo.Geometry()
         self._swerling = swr.Swerling()
         self._power = pw.Power()
@@ -29,12 +32,22 @@ class Computation:
     def scenario(self, new_scenario):
         self.__scenario = new_scenario
 
+    @property
+    def terrain(self):
+        return self.__terrain
+
+    @terrain.setter
+    def terrain(self, new_terrain):
+        self.__terrain = new_terrain
+
     def ds_computation(self, range):
         c = self.scenario.config_parameters['celerity']
         h = self.scenario.scenario_parameters['radar_height']
         theta_az = self.scenario.scenario_parameters['azimuth_angle']
         tau = self.scenario.config_parameters['tau']
-        return self._geometry.ds_computation(range, c, h, theta_az, tau)
+        elevation_angle = self.elevation_angle(range)
+        grazing_angle = self.grazing_angle(range)
+        return self._geometry.ds_computation(range, c, h, elevation_angle=elevation_angle, grazing_angle=grazing_angle, tau=tau)
 
     def r_horizon(self):
         z = self.scenario.scenario_parameters['target_height']
@@ -53,11 +66,17 @@ class Computation:
         z = self.scenario.scenario_parameters['target_height']
         return self._geometry.is_visible(range, theta, z, theta_horizon, r_horizon)
 
-    def theta_computation(self, range):
+    def elevation_angle(self, range):
         h = self.scenario.scenario_parameters['radar_height']
         er = self.scenario.config_parameters['earth_radius']
         z = self.scenario.scenario_parameters['target_height']
-        return self._geometry.theta_computation(range, h, er, z)
+        return self._geometry.elevation_angle_computation(range, h, er, z)
+
+    def grazing_angle(self, range):
+        h = self.scenario.scenario_parameters['radar_height']
+        er = self.scenario.config_parameters['earth_radius']
+        z = self.scenario.scenario_parameters['target_height']
+        return self._geometry.grazing_angle_computation(range, h, er, z)
 
     def swerling_computation(self, pfa, snr):
 
@@ -95,10 +114,21 @@ class Computation:
         return self._pd.global_pd_computation(nb, kb, burst_pd)
 
     def computation_loop(self, mutli_scan_mode=False, snr_mode=False):
-        x = np.linspace(1000, 100000, 1000)
+        x = np.arange(self.scenario.range_min, self.scenario.range_max, self.scenario.step, dtype=float)
+        print(x)
+        print(len(x))
+        y1 = self.elevation_angle(x)
+        x2 = np.linspace(1000, 100000,100)
+        print(x2)
+        print(len(x2))
+        y2 = self.elevation_angle(x2)
+
         y = []
         z = []
         w = []
+        # print(self.theta_horizon())
+        # print(self.r_horizon())
+
 
         for i in x:
 
@@ -110,6 +140,9 @@ class Computation:
             clutter_range = i
             ds = self.ds_computation(clutter_range)
             reflectivity = self.scenario.scenario_parameters['clutter_reflectivity']
+
+            range_idx = int((clutter_range - self.scenario.range_min) // self.scenario.step)
+            reflectivity = self.terrain.reflectivity[range_idx]
             clutter_rcs = reflectivity * ds
 
             clutter_doppler_gain = self.scenario.config_parameters['doppler_gain_clutter']
@@ -141,7 +174,9 @@ class Computation:
                 global_pd_wo_clutter = self.global_pd_computation(n, k, global_pd_wo_clutter)
                 global_pd_side_lobe = self.global_pd_computation(n, k, global_pd_side_lobe)
 
-            theta = self.theta_computation(target_range)
+            theta = self.elevation_angle(target_range)
+            # if target_range >= self.r_horizon():
+                # print(theta)
 
             if not snr_mode :
                 if not self.is_visible(target_range, theta):
@@ -161,5 +196,27 @@ class Computation:
                     y.append(10 * np.log10(snrc))
                     z.append(10 * np.log10(snr))
                     w.append(10 * np.log10(snrc_side_lobe))
+        return x, y, z, w, x2, y2, y1
 
-        return x, y, z, w
+if __name__ == "__main__":
+    scenario = src.Scenario.Scenario()
+    scenario.load_scenario()
+    scenario.config()
+    terrain = trn.Terrain()
+    terrain.load_terrain('terrain.json')
+    computation = Computation(scenario, terrain)
+
+    x, y, z, w, x2, y2, y1 = computation.computation_loop(mutli_scan_mode=False, snr_mode=False)
+    print(len(x), len(y), len(z), len(w), len(x2), len(y2), len(y1))
+    print(computation.elevation_angle(46000))
+    print(computation.elevation_angle(46000.))
+    plt.subplot(121)
+    plt.plot(x, y1)
+    plt.plot(np.arange(1000, 101000, 1000), [computation.elevation_angle(46000) for i in range(100)])
+    plt.plot(np.arange(1000, 101000, 1000), [computation.elevation_angle(47000) for i in range(100)])
+    plt.subplot(122)
+    plt.plot(x2, y2)
+    plt.plot(np.arange(1000, 101000, 1000), [computation.elevation_angle(46000) for i in range(100)])
+    plt.plot(np.arange(1000, 101000, 1000), [computation.elevation_angle(47000) for i in range(100)])
+
+    plt.show()
