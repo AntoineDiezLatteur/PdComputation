@@ -11,10 +11,10 @@ class Reflection:
         pass
 
     def sea_reflectivity(self, range):
-        return 0.001
+        return 10 ** (-20/10)
 
     def lowland_reflectivity(self, range):
-        return 0.005
+        return 10 ** (-15/10)
 
     def hill_reflectivity(self, range):
-        return 0.01
+        return 10 ** (8/10)

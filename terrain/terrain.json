@@ -3,24 +3,18 @@
         "type": "sea",
         "height": 0,
         "start_range": 1000,
-        "stop_range": 20000
-    },
-    {
-        "type": "lowland",
-        "height": 30,
-        "start_range": 20000,
-        "stop_range": 30000
-    },
-    {
-        "type": "hill",
-        "height": 80,
-        "start_range": 30000,
         "stop_range": 40000
     },
     {
-        "type": "lowland",
+        "type": "hill",
         "height": 30,
         "start_range": 40000,
+        "stop_range": 45000
+    },
+    {
+        "type": "lowland",
+        "height": 5,
+        "start_range": 45000,
         "stop_range": 100000
     }
 ]

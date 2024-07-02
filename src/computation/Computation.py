@@ -137,17 +137,31 @@ class Computation:
         clutter_visible = self.clutter_is_visible(clutter_range, clutter_elevation_angle, clutter_height)
         return clutter_visible, target_visible
 
-    def computation_loop(self, mutli_scan_mode=False, snr_mode=False):
+    def computation_loop(self):
         x = np.arange(self.scenario.range_min, self.scenario.range_max, self.scenario.step, dtype=float)
         y1 = self.target_elevation_angle(x)
         x2 = np.linspace(1000, 100000,100)
         y2 = self.target_elevation_angle(x2)
 
-        y = []
-        z = []
-        w = []
-        # print(self.theta_horizon())
-        # print(self.r_horizon())
+        y1 = []
+        y2 = []
+        y3 = []
+        z1 = []
+        z2 = []
+        z3 = []
+        w1 = []
+        w2 = []
+        w3 = []
+        j1 = []
+        j2 = []
+        j3 = self.terrain.height
+        j4 = self.scenario.scenario_parameters['target_height'] * np.ones(len(self.terrain.height))
+        k1 = []
+        k2 = self.terrain.height
+        target_visibility = []
+        clutter_visibility = []
+        both_in_beam = []
+
 
         for i in x:
 
@@ -161,6 +175,9 @@ class Computation:
 
             clutter_is_visible, target_is_visible = self.visibility_manager(target_range, clutter_range, clutter_height, clutter_elevation_angle, target_elevation_angle)
             is_both_in_beam = self.is_both_in_beam(target_range, clutter_height)
+            target_visibility.append(target_is_visible)
+            clutter_visibility.append(clutter_is_visible)
+            both_in_beam.append(is_both_in_beam)
 
             if target_is_visible and clutter_is_visible and is_both_in_beam:
                 target_rcs = self.scenario.scenario_parameters['target_rcs']
@@ -193,30 +210,51 @@ class Computation:
             burst_pd_wo_clutter = self.swerling_computation(pfa, snr)
             burst_pd_side_lobe = self.swerling_computation(pfa, snrc_side_lobe)
 
-            global_pd = self.global_pd_computation(nb, kb, burst_pd)
-            global_pd_wo_clutter = self.global_pd_computation(nb, kb, burst_pd_wo_clutter)
-            global_pd_side_lobe = self.global_pd_computation(nb, kb, burst_pd_side_lobe)
+            global_pd_single_scan = self.global_pd_computation(nb, kb, burst_pd)
+            global_pd_wo_clutter_single_scan = self.global_pd_computation(nb, kb, burst_pd_wo_clutter)
+            global_pd_side_lobe_single_scan = self.global_pd_computation(nb, kb, burst_pd_side_lobe)
 
-            if snr_mode:
-                if snrc == 0: y.append(0)
-                else: y.append(10 * np.log10(snrc))
-                if snr == 0: z.append(0)
-                else: z.append(10 * np.log10(snr))
-                if snrc_side_lobe == 0: w.append(0)
-                else: w.append(10 * np.log10(snrc_side_lobe))
+            n = 4
+            k = 3
+            global_pd_multi_scan = self.global_pd_computation(n, k, global_pd_single_scan)
+            global_pd_wo_clutter_multi_scan = self.global_pd_computation(n, k, global_pd_wo_clutter_single_scan)
+            global_pd_side_lobe_multi_scan = self.global_pd_computation(n, k, global_pd_side_lobe_single_scan)
 
-            elif mutli_scan_mode:
-                n = 4
-                k = 3
-                global_pd = self.global_pd_computation(n, k, global_pd)
-                global_pd_wo_clutter = self.global_pd_computation(n, k, global_pd_wo_clutter)
-                global_pd_side_lobe = self.global_pd_computation(n, k, global_pd_side_lobe)
+            y1.append(global_pd_single_scan)
+            y2.append(global_pd_wo_clutter_single_scan)
+            y3.append(global_pd_side_lobe_single_scan)
 
-            y.append(global_pd)
-            z.append(global_pd_wo_clutter)
-            w.append(global_pd_side_lobe)
+            z1.append(global_pd_multi_scan)
+            z2.append(global_pd_wo_clutter_multi_scan)
+            z3.append(global_pd_side_lobe_multi_scan)
 
-        return x, y, z, w, x2, y2, y1
+            if snrc == 0:
+                w1.append(0)
+            else:
+                w1.append(10 * np.log10(snrc))
+
+            if snr == 0:
+                w2.append(0)
+            else:
+                w2.append(10 * np.log10(snr))
+
+            if snrc_side_lobe == 0:
+                w3.append(0)
+            else:
+                w3.append(10 * np.log10(snrc_side_lobe))
+
+
+        for i in range(1, len(both_in_beam)):
+            if both_in_beam[i] != both_in_beam[i - 1]:
+                j1.append(i)
+                j2.append(i)
+            if target_visibility[i] != target_visibility[i - 1]:
+                j1.append(i)
+            if clutter_visibility[i] != clutter_visibility[i - 1]:
+                j2.append(i)
+
+
+        return x, y1, y2, y3, z1, z2, z3, w1, w2, w3, j1, j2, j3, j4, k1, k2
 
 if __name__ == "__main__":
     scenario = src.Scenario.Scenario()
